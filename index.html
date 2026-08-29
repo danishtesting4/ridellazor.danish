@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>whoami</title>
+<link rel="icon" href="pfp/avatar.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main class="term" id="term">
+  <div class="term-bar">
+    <span class="dot red"></span>
+    <span class="dot yellow"></span>
+    <span class="dot green"></span>
+    <span class="term-title">guest@site: ~</span>
+  </div>
+
+  <div class="term-body">
+    <div class="line prompt-line"><span class="prompt">$</span> whoami</div>
+
+    <div class="identity" id="identity">
+      <img class="pfp" id="pfp" src="" alt="profile picture">
+      <div class="identity-text">
+        <h1 id="name">—</h1>
+        <p class="handle" id="handle"></p>
+        <p class="desc" id="desc"></p>
+      </div>
+    </div>
+
+    <div class="line prompt-line"><span class="prompt">$</span> ls links/</div>
+    <ul class="links" id="links"></ul>
+
+    <div class="line prompt-line"><span class="prompt">$</span> <span class="cursor">▌</span></div>
+  </div>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
