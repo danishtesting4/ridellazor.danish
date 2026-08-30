@@ -16,13 +16,13 @@
   <div class="term-bar">
     <span class="term-title">guest@site: ~</span>
     <div class="win-controls">
-      <span class="win-btn">–</span>
-      <span class="win-btn">▢</span>
-      <span class="win-btn win-close">×</span>
+      <span class="win-btn" id="btnMin" title="Minimize">–</span>
+      <span class="win-btn" id="btnMax" title="Maximize">▢</span>
+      <span class="win-btn win-close" id="btnClose" title="Close">×</span>
     </div>
   </div>
 
-  <div class="term-body">
+  <div class="term-body" id="termBody">
     <div class="line prompt-line"><span class="prompt">$</span> whoami</div>
 
     <div class="identity" id="identity">
@@ -37,9 +37,24 @@
     <div class="line prompt-line"><span class="prompt">$</span> ls links/</div>
     <ul class="links" id="links"></ul>
 
-    <div class="line prompt-line"><span class="prompt">$</span> <span class="cursor">▌</span></div>
+    <p class="hint">Type "help" to see available commands.</p>
+
+    <div class="term-history" id="termHistory"></div>
+
+    <div class="line prompt-line" id="inputLine">
+      <span class="prompt">$</span>
+      <span class="cwd" id="cwd">~</span>
+      <input type="text" id="cmdInput" class="cmd-input" autocomplete="off" spellcheck="false" autocapitalize="off" autofocus>
+    </div>
   </div>
 </main>
+
+<div class="desktop" id="desktop">
+  <div class="desktop-icons" id="desktopIcons"></div>
+  <button class="taskbar-item" id="restoreBtn">
+    <span class="taskbar-dot"></span> guest@site: ~
+  </button>
+</div>
 
 <script src="script.js"></script>
 </body>
