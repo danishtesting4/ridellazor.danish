@@ -37,19 +37,45 @@ body {
 .term-bar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
-  padding: 10px 14px;
+  padding: 8px 10px 8px 14px;
   background: #17191e;
   border-bottom: 1px solid var(--border);
 }
 
-.dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
-.dot.red { background: #ec6a5e; }
-.dot.yellow { background: #f4bf4f; }
-.dot.green { background: #61c454; }
+.win-controls {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.win-btn {
+  width: 26px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1;
+  color: var(--muted);
+  border-radius: 4px;
+  cursor: default;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.win-btn:hover {
+  background: #22252b;
+  color: var(--text);
+}
+
+.win-btn.win-close:hover {
+  background: #b0413e;
+  color: #fff;
+}
 
 .term-title {
-  margin-left: 8px;
   font-family: var(--mono);
   font-size: 12px;
   color: var(--muted);
