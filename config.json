@@ -4,18 +4,18 @@
   "pfp": "pfp/avatar.jpg",
   "links": [
     {
-      "label": "GitHub",
+      "label": "RidelLazor",
       "url": "https://github.com/RidelLazor",
       "icon": "https://www.google.com/s2/favicons?domain=github.com&sz=64"
     },
     {
-      "label": "YouTube — RiddlLyrics",
-      "url": "https://youtube.com/@RiddlLyrics",
+      "label": "RidelLazor",
+      "url": "https://youtube.com/@ridellazor",
       "icon": "https://www.google.com/s2/favicons?domain=youtube.com&sz=64"
     },
     {
-      "label": "Email",
-      "url": "mailto:you@example.com",
+      "label": "Ridellazorreply@gmail.com",
+      "url": "https://gmail.com",
       "icon": "https://www.google.com/s2/favicons?domain=gmail.com&sz=64"
     }
   ]
