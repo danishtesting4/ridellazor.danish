@@ -76,16 +76,19 @@ function renderDesktopIcons(config) {
   });
 }
 
-fetch('config.json')
-  .then(res => res.json())
-  .then(config => {
+Promise.all([
+  fetch('config.json').then(res => res.json()),
+  fetch('description.txt').then(res => res.text())
+])
+  .then(([config, description]) => {
+    config.description = description.trim();
     siteConfig = config;
     render(config);
     renderDesktopIcons(config);
     buildFS(config);
   })
   .catch(err => {
-    console.error('Could not load config.json', err);
+    console.error('Could not load config.json or description.txt', err);
   });
 
 // ── window controls ─────────────────────────────────────────
