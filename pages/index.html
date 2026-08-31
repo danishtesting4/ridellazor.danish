@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>projects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<main class="term projects-term" id="term">
+  <div class="term-bar">
+    <span class="term-title">guest@site: ~/pages</span>
+    <div class="win-controls">
+      <span class="win-btn" id="btnMin" title="Minimize">–</span>
+      <span class="win-btn" id="btnMax" title="Maximize">▢</span>
+      <span class="win-btn win-close" id="btnClose" title="Close">×</span>
+    </div>
+  </div>
+
+  <div class="term-body">
+    <div class="line prompt-line">
+      <span class="prompt">$</span> <a class="nav-link" href="../">cd ..</a>
+    </div>
+
+    <div class="line prompt-line"><span class="prompt">$</span> ls projects/</div>
+
+    <div class="projects-grid" id="projectsGrid"></div>
+  </div>
+</main>
+
+<div class="desktop" id="desktop">
+  <div class="desktop-icons" id="desktopIcons"></div>
+  <button class="taskbar-item" id="restoreBtn">
+    <span class="taskbar-dot"></span> guest@site: ~/pages
+  </button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

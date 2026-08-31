@@ -41,6 +41,7 @@ function renderDesktopIcons(config) {
 
   const items = [
     { label: 'Terminal', isTerminal: true },
+    { label: 'Projects', isFolder: true, url: 'pages/' },
     ...(config.links || []).map(l => ({ label: l.label, icon: l.icon, url: l.url }))
   ];
 
@@ -52,6 +53,8 @@ function renderDesktopIcons(config) {
     glyph.className = 'desktop-icon-glyph';
     if (item.isTerminal) {
       glyph.textContent = '>_';
+    } else if (item.isFolder) {
+      glyph.textContent = '📁';
     } else {
       const im = document.createElement('img');
       im.src = item.icon;
@@ -68,6 +71,8 @@ function renderDesktopIcons(config) {
     btn.addEventListener('click', () => {
       if (item.isTerminal) {
         restoreTerm();
+      } else if (item.isFolder) {
+        window.location.href = item.url;
       } else {
         window.open(item.url, item.url.startsWith('mailto:') ? '_self' : '_blank');
       }
@@ -134,9 +139,10 @@ function buildFS(config) {
   const links = config.links || [];
   const linkChildren = [];
   fs = {
-    '~': { type: 'dir', children: ['about.txt', 'links'] },
+    '~': { type: 'dir', children: ['about.txt', 'links', 'pages'] },
     '~/about.txt': { type: 'file', content: config.description || '' },
-    '~/links': { type: 'dir', children: linkChildren }
+    '~/links': { type: 'dir', children: linkChildren },
+    '~/pages': { type: 'dir', children: [] }
   };
   links.forEach(l => {
     const fname = slugify(l.label) + '.url';
@@ -169,6 +175,7 @@ const HELP_TEXT =
   '  pwd             print working directory\n' +
   '  echo <text>     print text\n' +
   '  open <name>     open a link in a new tab\n' +
+  '  projects        go to the projects page\n' +
   '  date            show current date/time\n' +
   '  clear           clear the terminal\n' +
   '  exit            close the window';
@@ -247,6 +254,10 @@ function executeCommand(cmd, args) {
       window.open(link.url, link.url.startsWith('mailto:') ? '_self' : '_blank');
       return 'opening ' + link.label + '...';
     }
+
+    case 'projects':
+      window.location.href = 'pages/';
+      return 'opening projects...';
 
     case 'sudo':
       return 'nice try.';
