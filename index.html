@@ -40,15 +40,15 @@
     <div class="line prompt-line"><span class="prompt">$</span> ls links/</div>
     <ul class="links" id="links"></ul>
 
-    <p class="hint">Type "help" to see available commands.</p>
+    <div class="term-buttons" id="termButtons">
+      <button class="term-btn" data-cmd="whoami">whoami</button>
+      <button class="term-btn" data-cmd="about">about</button>
+      <button class="term-btn" data-cmd="projects">projects</button>
+      <button class="term-btn" data-cmd="date">date</button>
+      <button class="term-btn" data-cmd="clear">clear</button>
+    </div>
 
     <div class="term-history" id="termHistory"></div>
-
-    <div class="line prompt-line" id="inputLine">
-      <span class="prompt">$</span>
-      <span class="cwd" id="cwd">~</span>
-      <input type="text" id="cmdInput" class="cmd-input" autocomplete="off" spellcheck="false" autocapitalize="off" autofocus>
-    </div>
   </div>
 </main>
 

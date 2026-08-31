@@ -90,7 +90,6 @@ Promise.all([
     siteConfig = config;
     render(config);
     renderDesktopIcons(config);
-    buildFS(config);
   })
   .catch(err => {
     console.error('Could not load config.json or description.txt', err);
@@ -116,159 +115,19 @@ function openDesktop() {
 function restoreTerm() {
   desktop.classList.remove('active');
   term.classList.remove('hidden');
-  cmdInput.focus();
 }
 
 btnMin.addEventListener('click', openDesktop);
 btnClose.addEventListener('click', openDesktop);
-btnMax.addEventListener('click', () => {
-  term.classList.toggle('maximized');
-  cmdInput.focus();
-});
+btnMax.addEventListener('click', () => term.classList.toggle('maximized'));
 restoreBtn.addEventListener('click', restoreTerm);
 
-// ── virtual filesystem ──────────────────────────────────────
-let fs = { '~': { type: 'dir', children: [] } };
-let cwd = '~';
-
-function slugify(label) {
-  return label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'link';
-}
-
-function buildFS(config) {
-  const links = config.links || [];
-  const linkChildren = [];
-  fs = {
-    '~': { type: 'dir', children: ['about.txt', 'links', 'pages'] },
-    '~/about.txt': { type: 'file', content: config.description || '' },
-    '~/links': { type: 'dir', children: linkChildren },
-    '~/pages': { type: 'dir', children: [] }
-  };
-  links.forEach(l => {
-    const fname = slugify(l.label) + '.url';
-    linkChildren.push(fname);
-    fs['~/links/' + fname] = { type: 'file', content: l.url, label: l.label };
-  });
-}
-
-function resolvePath(base, arg) {
-  if (!arg || arg === '~') return '~';
-  if (arg === '..') {
-    if (base === '~') return '~';
-    const parts = base.split('/');
-    parts.pop();
-    return parts.join('/') || '~';
-  }
-  if (arg.startsWith('~/')) return arg;
-  return base === '~' ? '~/' + arg : base + '/' + arg;
-}
-
-// ── command engine ──────────────────────────────────────────
-const HELP_TEXT =
-  'Available commands:\n' +
-  '  help            show this help\n' +
-  '  whoami          show your name and handle\n' +
-  '  about           show the description\n' +
-  '  ls [dir]        list files\n' +
-  '  cd <dir>        change directory\n' +
-  '  cat <file>      print file contents\n' +
-  '  pwd             print working directory\n' +
-  '  echo <text>     print text\n' +
-  '  open <name>     open a link in a new tab\n' +
-  '  projects        go to the projects page\n' +
-  '  date            show current date/time\n' +
-  '  clear           clear the terminal\n' +
-  '  exit            close the window';
-
+// ── button commands ───────────────────────────────────────────
 function escapeHtml(str) {
   return String(str)
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
-}
-
-function findLinkByName(name) {
-  if (!siteConfig) return null;
-  const lower = name.toLowerCase();
-  return (siteConfig.links || []).find(l =>
-    slugify(l.label) === slugify(name) ||
-    l.label.toLowerCase() === lower ||
-    l.label.toLowerCase().includes(lower)
-  );
-}
-
-function executeCommand(cmd, args) {
-  if (!siteConfig) return 'still loading, try again in a moment';
-
-  switch (cmd) {
-    case 'help':
-      return HELP_TEXT;
-
-    case 'whoami':
-      return (siteConfig.name || '') + (siteConfig.handle ? ' (@' + siteConfig.handle + ')' : '');
-
-    case 'about':
-      return siteConfig.description || '';
-
-    case 'pwd':
-      return cwd;
-
-    case 'echo':
-      return args.join(' ');
-
-    case 'date':
-      return new Date().toString();
-
-    case 'ls': {
-      const target = args[0] ? resolvePath(cwd, args[0]) : cwd;
-      const node = fs[target];
-      if (!node || node.type !== 'dir') return 'ls: not a directory: ' + (args[0] || cwd);
-      return node.children.map(c => {
-        const childPath = target + '/' + c;
-        return fs[childPath] && fs[childPath].type === 'dir' ? c + '/' : c;
-      }).join('  ') || '(empty)';
-    }
-
-    case 'cd': {
-      const target = resolvePath(cwd, args[0]);
-      const node = fs[target];
-      if (!node || node.type !== 'dir') return 'cd: no such directory: ' + (args[0] || '');
-      cwd = target;
-      document.getElementById('cwd').textContent = cwd;
-      return '';
-    }
-
-    case 'cat': {
-      if (!args[0]) return 'cat: missing file operand';
-      const target = resolvePath(cwd, args[0]);
-      const node = fs[target];
-      if (!node) return 'cat: no such file: ' + args[0];
-      if (node.type === 'dir') return 'cat: ' + args[0] + ' is a directory';
-      return node.content;
-    }
-
-    case 'open': {
-      if (!args[0]) return 'open: usage: open <link name>';
-      const link = findLinkByName(args.join(' '));
-      if (!link) return 'open: no link matching "' + args.join(' ') + '" — try "ls links/"';
-      window.open(link.url, link.url.startsWith('mailto:') ? '_self' : '_blank');
-      return 'opening ' + link.label + '...';
-    }
-
-    case 'projects':
-      window.location.href = 'pages/';
-      return 'opening projects...';
-
-    case 'sudo':
-      return 'nice try.';
-
-    case 'exit':
-      openDesktop();
-      return '';
-
-    default:
-      return cmd + ': command not found (type "help" for a list of commands)';
-  }
 }
 
 function appendHistoryLine(html) {
@@ -280,37 +139,43 @@ function appendHistoryLine(html) {
   historyEl.scrollTop = historyEl.scrollHeight;
 }
 
-function runCommand(raw) {
-  const trimmed = raw.trim();
-  if (!trimmed) return;
-
-  const [cmdRaw, ...args] = trimmed.split(/\s+/);
-  const cmd = cmdRaw.toLowerCase();
-
+function runButtonCommand(cmd) {
   if (cmd === 'clear') {
     document.getElementById('termHistory').innerHTML = '';
     return;
   }
 
-  appendHistoryLine(
-    '<span class="prompt">$</span> <span class="cwd-echo">' + escapeHtml(cwd) + '</span> ' + escapeHtml(trimmed)
-  );
+  if (cmd === 'projects') {
+    window.location.href = 'pages/';
+    return;
+  }
 
-  const output = executeCommand(cmd, args);
+  if (!siteConfig) {
+    appendHistoryLine('<span class="out">still loading, try again in a moment</span>');
+    return;
+  }
+
+  let output = '';
+  switch (cmd) {
+    case 'whoami':
+      output = (siteConfig.name || '') + (siteConfig.handle ? ' (@' + siteConfig.handle + ')' : '');
+      break;
+    case 'about':
+      output = siteConfig.description || '';
+      break;
+    case 'date':
+      output = new Date().toString();
+      break;
+  }
+
+  appendHistoryLine('<span class="prompt">$</span> ' + escapeHtml(cmd));
   if (output) {
-    appendHistoryLine('<span class="out">' + escapeHtml(output).replace(/\n/g, '<br>') + '</span>');
+    appendHistoryLine('<span class="out">' + escapeHtml(output) + '</span>');
   }
 }
 
-const cmdInput = document.getElementById('cmdInput');
-cmdInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    const val = cmdInput.value;
-    cmdInput.value = '';
-    runCommand(val);
-  }
-});
-
-document.getElementById('termBody').addEventListener('click', e => {
-  if (e.target.tagName !== 'A') cmdInput.focus();
+document.getElementById('termButtons').addEventListener('click', e => {
+  const btn = e.target.closest('.term-btn');
+  if (!btn) return;
+  runButtonCommand(btn.dataset.cmd);
 });
