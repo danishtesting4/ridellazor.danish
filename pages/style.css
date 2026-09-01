@@ -1,24 +1,14 @@
-.nav-link {
-  color: var(--accent);
-  text-decoration: none;
-}
-
-.nav-link:hover {
-  text-decoration: underline;
-}
-
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 14px;
+  gap: 12px;
   margin: 14px 0 6px;
 }
 
 .project-card {
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 14px;
-  background: #0f1114;
+  padding: 13px;
+  background: #0f0e0c;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -34,17 +24,16 @@
 .project-name {
   font-family: var(--mono);
   font-weight: 700;
-  font-size: 14px;
+  font-size: 13.5px;
   color: var(--text);
 }
 
 .project-status {
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  padding: 2px 7px;
-  border-radius: 999px;
+  padding: 2px 6px;
   border: 1px solid var(--accent-dim);
   color: var(--accent);
   white-space: nowrap;
@@ -52,7 +41,7 @@
 
 .project-desc {
   font-family: var(--sans);
-  font-size: 13px;
+  font-size: 12.5px;
   line-height: 1.5;
   color: var(--muted);
   margin: 0;
@@ -61,15 +50,14 @@
 .project-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 5px;
 }
 
 .project-tag {
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: 10px;
   color: var(--muted);
   border: 1px solid var(--border);
-  border-radius: 4px;
   padding: 2px 6px;
 }
 
@@ -77,13 +65,14 @@
   margin-top: auto;
   align-self: flex-start;
   font-family: var(--mono);
-  font-size: 12.5px;
+  font-size: 12px;
   color: var(--accent);
   text-decoration: none;
+  border-bottom: 1px dotted var(--accent-dim);
 }
 
 .project-link:hover {
-  text-decoration: underline;
+  border-bottom-style: solid;
 }
 
 .projects-empty {
@@ -93,5 +82,5 @@
 }
 
 .term.projects-term {
-  max-width: 720px;
+  max-width: 700px;
 }
