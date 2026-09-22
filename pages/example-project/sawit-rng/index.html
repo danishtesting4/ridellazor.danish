@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SAWIT RNG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Archivo+Black&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #12180f;
+    --paper: #f4edd8;
+    --lime: #a8e62a;
+    --leaf: #2f8a3e;
+    --gold: #ffb703;
+    --orange: #ff6b35;
+    --panel: #fffaea;
+
+    --c-common: #7a8a72;
+    --c-uncommon: #2f8a3e;
+    --c-rare: #1f7fd1;
+    --c-epic: #8b3fd1;
+    --c-legendary: #ffb703;
+    --c-mythic: #ff6b35;
+    --c-secret: #e8258d;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+      repeating-linear-gradient(135deg, #eee3c2 0px, #eee3c2 22px, #e8dab3 22px, #e8dab3 44px);
+    font-family: 'Space Mono', monospace;
+    color: var(--ink);
+    padding: 18px 14px 60px;
+  }
+
+  .wrap { max-width: 680px; margin: 0 auto; }
+
+  .nav-back {
+    display: inline-block;
+    margin-bottom: 12px;
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--ink);
+    text-decoration: none;
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    padding: 5px 10px;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .nav-back:hover { transform: translate(1px, 1px); box-shadow: 2px 2px 0 var(--ink); }
+
+  header {
+    text-align: center;
+    margin: 6px 0 14px;
+  }
+
+  .badge-tag {
+    display: inline-block;
+    background: var(--orange);
+    color: var(--paper);
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    padding: 3px 10px;
+    border: 2px solid var(--ink);
+    transform: rotate(-2deg);
+    margin-bottom: 8px;
+  }
+
+  header h1 {
+    margin: 0;
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 52px;
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    text-shadow: 4px 4px 0 var(--lime);
+    -webkit-text-stroke: 2px var(--ink);
+  }
+
+  header p {
+    margin: 10px 0 0;
+    font-weight: 700;
+    font-size: 13px;
+    background: var(--ink);
+    color: var(--lime);
+    display: inline-block;
+    padding: 4px 12px;
+  }
+
+  .rank-strip {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+
+  .rank-chip {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.03em;
+    padding: 4px 14px;
+    border: 3px solid var(--ink);
+    transform: rotate(-1deg);
+  }
+
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 14px 0 18px;
+  }
+
+  .stat-chip {
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
+    padding: 6px 12px;
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .stat-chip b { color: var(--orange); }
+
+  .roll-area {
+    background: var(--panel);
+    border: 4px solid var(--ink);
+    box-shadow: 7px 7px 0 var(--ink);
+    padding: 26px 18px;
+    text-align: center;
+    margin-bottom: 18px;
+  }
+
+  #rollDisplay {
+    min-height: 96px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 18px;
+  }
+
+  #rollDisplay .item-name {
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 24px;
+    line-height: 1.1;
+  }
+
+  #rollDisplay .item-rarity {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.08em;
+    background: var(--ink);
+    padding: 1px 10px;
+  }
+
+  #rollDisplay .item-hint {
+    color: #5a6555;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .roll-btn {
+    background: var(--lime);
+    border: 4px solid var(--ink);
+    color: var(--ink);
+    font-family: 'Archivo Black', sans-serif;
+    font-size: 18px;
+    padding: 14px 36px;
+    cursor: pointer;
+    box-shadow: 6px 6px 0 var(--ink);
+    transition: transform 0.06s ease, box-shadow 0.06s ease;
+  }
+  .roll-btn:active {
+    transform: translate(4px, 4px);
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+  .roll-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .roll-cost {
+    display: block;
+    margin-top: 10px;
+    font-weight: 700;
+    font-size: 11px;
+    color: #5a6555;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    margin: 26px 0 10px;
+    display: inline-block;
+    background: var(--gold);
+    border: 3px solid var(--ink);
+    padding: 2px 12px;
+    transform: rotate(-1deg);
+  }
+
+  .shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .shop-card {
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .shop-card h3 {
+    margin: 0;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+  }
+  .shop-card p {
+    margin: 0;
+    font-size: 11px;
+    font-weight: 700;
+    color: #5a6555;
+    line-height: 1.4;
+  }
+  .shop-card button {
+    margin-top: auto;
+    background: var(--ink);
+    border: none;
+    color: var(--paper);
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 11px;
+    padding: 8px;
+    cursor: pointer;
+  }
+  .shop-card button:hover:not(:disabled) { background: var(--orange); }
+  .shop-card button:disabled { opacity: 0.4; cursor: default; }
+
+  .inv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 8px;
+  }
+
+  .inv-card {
+    background: var(--panel);
+    border: 3px solid var(--ink);
+    border-left: 8px solid var(--c-common);
+    padding: 8px 10px;
+    font-size: 11.5px;
+    font-weight: 700;
+  }
+  .inv-card .count { color: #5a6555; font-size: 10.5px; }
+
+  .inv-empty { color: #5a6555; font-size: 12px; font-weight: 700; }
+
+  footer {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: #5a6555;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-7px) rotate(-1deg); }
+    40% { transform: translateX(7px) rotate(1deg); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+  .shake { animation: shake 0.35s ease; }
+
+  #toast {
+    position: fixed;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--gold);
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    color: var(--ink);
+    padding: 10px 18px;
+    font-weight: 700;
+    font-size: 12.5px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 10;
+  }
+  #toast.show { opacity: 1; transform: translate(-50%, -6px); }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <a class="nav-back" href="../">← BALIK</a>
+
+  <header>
+    <span class="badge-tag">100% BUKAN SPONSOR GAPKI</span>
+    <h1>SAWIT RNG</h1>
+    <p>ROLL. JUAL. NAIK KELAS SULTAN.</p>
+  </header>
+
+  <div class="rank-strip">
+    <span class="rank-chip" id="rankChip">Anak Kos</span>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-chip">💰 <b id="statMoney">0</b> RUPIAH</div>
+    <div class="stat-chip">🌴 <b id="statRolls">0</b> ROLL</div>
+    <div class="stat-chip">🍀 <b id="statLuck">LV.0</b> LUCK</div>
+  </div>
+
+  <div class="roll-area">
+    <div id="rollDisplay">
+      <span class="item-hint">PENCET TOMBOL, JADI PECINTA SAWIT SEJATI</span>
+    </div>
+    <button class="roll-btn" id="rollBtn">🎲 GASKEUN ROLL</button>
+    <span class="roll-cost">gratis — auto roll dijual di bawah kalau males mencet</span>
+  </div>
+
+  <div class="section-title">UPGRADE</div>
+  <div class="shop-grid">
+    <div class="shop-card">
+      <h3>🍀 NAIKIN LUCK</h3>
+      <p>peluang dapet sawit langka makin gede</p>
+      <button id="buyLuck">BELI — <span id="luckCost">100</span></button>
+    </div>
+    <div class="shop-card">
+      <h3>⚡ AUTO ROLL</h3>
+      <p>roll sendiri, kamu tinggal rebahan</p>
+      <button id="buyAuto">BELI — <span id="autoCost">500</span></button>
+    </div>
+    <div class="shop-card">
+      <h3>🚜 JUAL SEMUA</h3>
+      <p>gudang penuh? cairin jadi rupiah</p>
+      <button id="sellAll">JUAL SEMUA</button>
+    </div>
+  </div>
+
+  <div class="section-title">GUDANG SAWIT</div>
+  <div class="inv-grid" id="invGrid">
+    <span class="inv-empty">masih kosong — roll dulu, jangan cuma healing</span>
+  </div>
+
+  <footer>SAWIT RNG — progress kesimpen otomatis di browser kamu. gas terus juragan.</footer>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const ITEMS = [
+  { name: "Bibit Sawit", rarity: "common", weight: 500, value: 8 },
+  { name: "Sawit Rebahan", rarity: "common", weight: 380, value: 12 },
+  { name: "Sawit Baper", rarity: "common", weight: 300, value: 6 },
+
+  { name: "Sawit Healing", rarity: "uncommon", weight: 180, value: 45 },
+  { name: "Tandan Segar", rarity: "uncommon", weight: 140, value: 60 },
+
+  { name: "Sawit Gen Z", rarity: "rare", weight: 55, value: 260 },
+  { name: "Traktor Santuy", rarity: "rare", weight: 35, value: 320 },
+
+  { name: "Sawit Sultan", rarity: "epic", weight: 14, value: 1400 },
+  { name: "Truk CPO Mewah", rarity: "epic", weight: 9, value: 1800 },
+
+  { name: "Sawit Crazy Rich", rarity: "legendary", weight: 3, value: 8000 },
+  { name: "Pabrik Mini", rarity: "legendary", weight: 1.5, value: 11000 },
+
+  { name: "Sawit Kilat Auto Cuan", rarity: "mythic", weight: 0.4, value: 45000 },
+
+  { name: "Sawit Naga Legendaris", rarity: "secret", weight: 0.05, value: 250000 },
+];
+
+const RARITY_LABEL = {
+  common: "COMMON", uncommon: "UNCOMMON", rare: "RARE",
+  epic: "EPIC", legendary: "LEGENDARY", mythic: "MYTHIC", secret: "★ SECRET ★"
+};
+
+const RANKS = [
+  { at: 0, title: "Anak Kos" },
+  { at: 500, title: "Buruh Sawit" },
+  { at: 5000, title: "Mandor Sawit" },
+  { at: 30000, title: "Juragan Sawit" },
+  { at: 150000, title: "Sultan Sawit" },
+  { at: 750000, title: "Crazy Rich Sawit" },
+  { at: 3000000, title: "Pecinta Sawit Sejati" },
+];
+
+const TOASTS_GOOD = [
+  "MANTAP JIWA!", "GASKEUN TERUS!", "AUTO SULTAN!", "SANTUY TAPI CUAN!", "GACOR PARAH!"
+];
+
+const SAVE_KEY = "sawit-rng-save-v2";
+
+let state = {
+  money: 0,
+  rolls: 0,
+  luckLevel: 0,
+  autoLevel: 0,
+  inventory: {},
+};
+
+function load() {
+  try {
+    const raw = localStorage.getItem(SAVE_KEY);
+    if (raw) state = { ...state, ...JSON.parse(raw) };
+    else {
+      const old = localStorage.getItem("sawit-rng-save-v1");
+      if (old) state = { ...state, ...JSON.parse(old) };
+    }
+  } catch (e) { /* corrupted save, start fresh */ }
+}
+
+function save() {
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (e) { /* storage unavailable */ }
+}
+
+function currentRank() {
+  let rank = RANKS[0];
+  for (const r of RANKS) if (state.money >= r.at) rank = r;
+  return rank;
+}
+
+function luckCost() { return Math.round(100 * Math.pow(1.8, state.luckLevel)); }
+function autoCost() { return Math.round(500 * Math.pow(2.2, state.autoLevel)); }
+
+function weightedPool() {
+  const boost = 1 + state.luckLevel * 0.35;
+  return ITEMS.map(it => {
+    const isCommonish = it.rarity === "common" || it.rarity === "uncommon";
+    return { ...it, effWeight: isCommonish ? it.weight : it.weight * boost };
+  });
+}
+
+function rollOnce() {
+  const pool = weightedPool();
+  const total = pool.reduce((s, it) => s + it.effWeight, 0);
+  let r = Math.random() * total;
+  for (const it of pool) {
+    r -= it.effWeight;
+    if (r <= 0) return it;
+  }
+  return pool[0];
+}
+
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove("show"), 1800);
+}
+
+function doRoll() {
+  const item = rollOnce();
+  state.rolls++;
+  state.inventory[item.name] = (state.inventory[item.name] || 0) + 1;
+
+  const display = document.getElementById("rollDisplay");
+  display.innerHTML =
+    `<span class="item-name">${item.name}</span>` +
+    `<span class="item-rarity" style="color: var(--c-${item.rarity})">${RARITY_LABEL[item.rarity]}</span>` +
+    `<span class="item-hint">SEHARGA ${item.value.toLocaleString()} RUPIAH</span>`;
+
+  if (["epic", "legendary", "mythic", "secret"].includes(item.rarity)) {
+    display.classList.remove("shake");
+    void display.offsetWidth;
+    display.classList.add("shake");
+  }
+
+  if (item.rarity === "secret") {
+    showToast("🐉 GOKIL! SAWIT NAGA! ITEM TERLANGKA SE-KEBUN!");
+  } else if (item.rarity === "mythic") {
+    showToast("⚡ MANTAP JIWA! SAWIT KILAT!");
+  } else if (item.rarity === "legendary") {
+    showToast(TOASTS_GOOD[Math.floor(Math.random() * TOASTS_GOOD.length)]);
+  }
+
+  save();
+  renderAll();
+}
+
+function sellAll() {
+  let total = 0;
+  for (const it of ITEMS) {
+    const count = state.inventory[it.name] || 0;
+    total += count * it.value;
+  }
+  if (total === 0) { showToast("GUDANG MASIH KOSONG, JURAGAN"); return; }
+  state.money += total;
+  state.inventory = {};
+  showToast(`CAIR! +${total.toLocaleString()} RUPIAH`);
+  save();
+  renderAll();
+}
+
+function buyLuck() {
+  const cost = luckCost();
+  if (state.money < cost) { showToast("RUPIAH KURANG, GAS ROLL DULU"); return; }
+  state.money -= cost;
+  state.luckLevel++;
+  save();
+  renderAll();
+}
+
+let autoTimer = null;
+function buyAuto() {
+  const cost = autoCost();
+  if (state.money < cost) { showToast("RUPIAH KURANG, GAS ROLL DULU"); return; }
+  state.money -= cost;
+  state.autoLevel++;
+  setupAutoRoll();
+  save();
+  renderAll();
+}
+
+function setupAutoRoll() {
+  if (autoTimer) clearInterval(autoTimer);
+  if (state.autoLevel > 0) {
+    const intervalMs = Math.max(800, 3000 - state.autoLevel * 400);
+    autoTimer = setInterval(doRoll, intervalMs);
+  }
+}
+
+function renderAll() {
+  document.getElementById("statMoney").textContent = state.money.toLocaleString();
+  document.getElementById("statRolls").textContent = state.rolls.toLocaleString();
+  document.getElementById("statLuck").textContent = "LV." + state.luckLevel;
+  document.getElementById("luckCost").textContent = luckCost().toLocaleString();
+  document.getElementById("autoCost").textContent = autoCost().toLocaleString();
+  document.getElementById("rankChip").textContent = currentRank().title;
+
+  const invGrid = document.getElementById("invGrid");
+  const entries = Object.entries(state.inventory).filter(([, c]) => c > 0);
+  if (entries.length === 0) {
+    invGrid.innerHTML = '<span class="inv-empty">masih kosong — roll dulu, jangan cuma healing</span>';
+  } else {
+    invGrid.innerHTML = entries.map(([name, count]) => {
+      const item = ITEMS.find(it => it.name === name);
+      const rarity = item ? item.rarity : "common";
+      return `<div class="inv-card" style="border-left-color: var(--c-${rarity})">
+        ${name.toUpperCase()}<br><span class="count">x${count}</span>
+      </div>`;
+    }).join("");
+  }
+}
+
+document.getElementById("rollBtn").addEventListener("click", doRoll);
+document.getElementById("buyLuck").addEventListener("click", buyLuck);
+document.getElementById("buyAuto").addEventListener("click", buyAuto);
+document.getElementById("sellAll").addEventListener("click", sellAll);
+
+load();
+setupAutoRoll();
+renderAll();
+</script>
+
+</body>
+</html>
