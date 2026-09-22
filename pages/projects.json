@@ -25,5 +25,12 @@
     "description": "Example of SupeprBLOX",
     "tags": [""],
     "url": "example-project/superblox_site(1)/index.html"
+  },
+  {
+    "name": "Sawit RNG",
+    "status": "Finished",
+    "description": "Ehem.... Pecinta sawit nihh",
+    "tags": ["Kelas"],
+    "url": "example-project/sawit-rng/index.html"
   }
 ]
