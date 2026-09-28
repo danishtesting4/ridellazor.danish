@@ -1,105 +1,79 @@
-// ── community sites ────────────────────────────────────────────
-// entries are added with `node upload.js` at the repo root
-function renderSites(sites) {
-  const grid = document.getElementById('communityGrid');
-  grid.innerHTML = '';
+// community list — entries are added with `node upload.js` at the repo root
+
+const EMAIL = 'ridellazorreply@gmail.com';
+
+function setCount(count) {
+  const el = document.getElementById('siteCount');
+  if (el) el.textContent = count === 1 ? '1 project' : count + ' projects';
+}
+
+function writeNote(message) {
+  const p = document.createElement('p');
+  p.className = 'note';
+  p.textContent = message;
+  return p;
+}
+
+function renderItem(site) {
+  const row = document.createElement('a');
+  row.className = 'item';
+  row.href = site.url || '#';
+
+  if (/^https?:\/\//i.test(site.url || '')) {
+    row.target = '_blank';
+    row.rel = 'noopener noreferrer';
+  }
+
+  const name = document.createElement('span');
+  name.className = 'item-name';
+  name.textContent = site.name || 'Untitled';
+  row.appendChild(name);
+
+  let desc = site.description || '';
+  if (site.by) desc = 'by ' + site.by + (desc ? ' — ' + desc : '');
+  if (desc) {
+    const text = document.createElement('span');
+    text.className = 'item-desc';
+    text.textContent = desc;
+    row.appendChild(text);
+  }
+
+  const link = document.createElement('span');
+  link.className = 'item-link';
+  link.textContent = /^https?:\/\//i.test(site.url || '') ? 'open →' : 'view →';
+  row.appendChild(link);
+
+  return row;
+}
+
+function render(sites) {
+  const list = document.getElementById('communityList');
+  if (!list) return;
+
+  list.textContent = '';
+  setCount(sites.length);
 
   if (!sites.length) {
-    const empty = document.createElement('p');
-    empty.className = 'projects-empty';
-    empty.textContent = 'nothing here yet — mail one over';
-    grid.appendChild(empty);
+    list.appendChild(writeNote('Nothing here yet. The first one is whatever you send over.'));
     return;
   }
 
-  sites.forEach(site => {
-    const card = document.createElement('div');
-    card.className = 'project-card';
-
-    const head = document.createElement('div');
-    head.className = 'project-card-head';
-
-    const name = document.createElement('span');
-    name.className = 'project-name';
-    name.textContent = site.name || 'Untitled';
-    head.appendChild(name);
-    card.appendChild(head);
-
-    if (site.by) {
-      const by = document.createElement('span');
-      by.className = 'site-by';
-      by.textContent = 'by ' + site.by;
-      card.appendChild(by);
-    }
-
-    if (site.description) {
-      const desc = document.createElement('p');
-      desc.className = 'project-desc';
-      desc.textContent = site.description;
-      card.appendChild(desc);
-    }
-
-    if (site.url) {
-      const link = document.createElement('a');
-      link.className = 'project-link';
-      link.href = site.url;
-      link.textContent = 'view →';
-      if (/^https?:\/\//i.test(site.url)) {
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-      }
-      card.appendChild(link);
-    }
-
-    grid.appendChild(card);
-  });
+  const frag = document.createDocumentFragment();
+  sites.forEach(site => frag.appendChild(renderItem(site)));
+  list.appendChild(frag);
 }
 
 fetch('community.json')
-  .then(res => res.json())
-  .then(renderSites)
+  .then(res => {
+    if (!res.ok) throw new Error('community.json responded ' + res.status);
+    return res.json();
+  })
+  .then(data => render(Array.isArray(data) ? data : []))
   .catch(err => {
     console.error('Could not load community.json', err);
-    const grid = document.getElementById('communityGrid');
-    const msg = document.createElement('p');
-    msg.className = 'projects-empty';
-    msg.textContent = 'could not load community.json';
-    grid.appendChild(msg);
+    const list = document.getElementById('communityList');
+    if (!list) return;
+    list.textContent = '';
+    setCount(0);
+    list.appendChild(writeNote('Could not load the list. Try again in a moment, or mail ' + EMAIL + '.'));
   });
-
-// ── desktop icons ──────────────────────────────────────────────
-function renderDesktopIcons() {
-  const grid = document.getElementById('desktopIcons');
-  grid.innerHTML = '';
-
-  const items = [
-    { label: 'Home', url: '../', glyph: '⌂' },
-    { label: 'Projects', url: './', glyph: '📁' },
-    { label: 'Terminal', isTerminal: true, glyph: '>_' }
-  ];
-
-  items.forEach(item => {
-    const btn = document.createElement('button');
-    btn.className = 'desktop-icon';
-
-    const glyph = document.createElement('div');
-    glyph.className = 'desktop-icon-glyph';
-    glyph.textContent = item.glyph;
-
-    const label = document.createElement('span');
-    label.textContent = item.label;
-
-    btn.appendChild(glyph);
-    btn.appendChild(label);
-    btn.addEventListener('click', () => {
-      if (item.isTerminal) {
-        window.restoreTerm();
-      } else {
-        window.location.href = item.url;
-      }
-    });
-    grid.appendChild(btn);
-  });
-}
-
-renderDesktopIcons();

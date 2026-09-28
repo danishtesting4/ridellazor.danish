@@ -3,56 +3,40 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>community</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../style.css">
-<link rel="stylesheet" href="style.css">
+<title>Community — RidelLazor</title>
+<meta name="description" content="Work from people who got in touch. Send yours over.">
+<link rel="icon" href="../pfp/avatar.jpg">
 <link rel="stylesheet" href="community.css">
 </head>
 <body>
 
-<main class="term projects-term" id="term">
-  <div class="term-bar">
-    <span class="term-title">guest@site: ~/community</span>
-    <div class="win-controls">
-      <span class="win-btn" id="btnMin" title="Minimize">–</span>
-      <span class="win-btn" id="btnMax" title="Maximize">▢</span>
-      <span class="win-btn win-close" id="btnClose" title="Close">×</span>
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="../">RidelLazor</a>
+    <div class="nav-links">
+      <a href="./">Projects</a>
+      <a href="../">Home</a>
     </div>
   </div>
+</nav>
 
-  <div class="term-body">
+<main class="main">
 
-    <div class="line prompt-line"><span class="prompt">$</span> ls pages/</div>
-    <div class="line nav-row">
-      <a class="nav-link" href="./">index.html</a>
-      <a class="nav-link" href="community.html">community.html</a>
-      <a class="nav-link" href="../">~</a>
-    </div>
+  <h1>Community</h1>
+  <p class="sub">Work from people who got in touch. Games, tools, art, whatever.</p>
 
-    <div class="line prompt-line"><span class="prompt">$</span> cat submit.txt</div>
-    <p class="submit-blurb">
-      made something? mail it to
-      <a class="nav-link" href="mailto:ridellazorreply@gmail.com">ridellazorreply@gmail.com</a>
-      with the file attached. a name and a line about it is enough, i'll do the rest.
-    </p>
+  <p class="count" id="siteCount"></p>
 
-    <div class="line prompt-line"><span class="prompt">$</span> ls sites/</div>
-    <div class="projects-grid" id="communityGrid"></div>
+  <div id="communityList"></div>
 
+  <div class="send">
+    <h2>Send yours</h2>
+    <p>Mail it over with the file attached. A name and a line about it is enough.</p>
+    <a class="mail" href="mailto:ridellazorreply@gmail.com">ridellazorreply@gmail.com</a>
   </div>
+
 </main>
 
-<div class="desktop" id="desktop">
-  <div class="desktop-icons" id="desktopIcons"></div>
-  <button class="taskbar-item" id="restoreBtn">
-    <span class="taskbar-dot"></span> guest@site: ~/community
-  </button>
-</div>
-
-<script src="window.js"></script>
 <script src="community.js"></script>
 </body>
 </html>
