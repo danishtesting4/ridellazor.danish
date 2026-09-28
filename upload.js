@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 'use strict';
 
-// upload "<name>" "<description>" "<file.html>" ["<by>"]
+// upload "<name>" "<description>" "<file.html>" "<author>"
 //
 // copies the file into pages/community/ and adds it to pages/community.json
 //
 //   node upload.js "Sawit RNG" "a luck based clicker" "sawit.html" "danish"
 //
-// the 4th argument is optional and shows up as the "by ..." line on the card
+// all four arguments are required — the author shows up as the "by ..." line on the card
 
 const fs = require('fs');
 const path = require('path');
@@ -16,7 +16,7 @@ const ROOT = __dirname;
 const SITE_DIR = path.join(ROOT, 'pages', 'community');
 const LIST = path.join(ROOT, 'pages', 'community.json');
 
-const [name, description, file, by] = process.argv.slice(2);
+const [name, description, file, by] = process.argv.slice(2).map(arg => (arg || '').trim());
 
 function die(msg) {
   console.error('upload: ' + msg);
@@ -34,8 +34,18 @@ function slugify(value) {
     .replace(/^-+|-+$/g, '') || 'site';
 }
 
-if (!name || !description || !file) {
-  die('usage: node upload.js "<name>" "<description>" "<file.html>" ["<by>"]');
+if (!name || !description || !file || !by) {
+  const missing = [
+    !name && '"<name>"',
+    !description && '"<description>"',
+    !file && '"<file.html>"',
+    !by && '"<author>"'
+  ].filter(Boolean).join(' ');
+
+  die(
+    'missing ' + missing + '\n' +
+    'usage: node upload.js "<name>" "<description>" "<file.html>" "<author>"'
+  );
 }
 
 const source = path.resolve(process.cwd(), file);
@@ -67,8 +77,7 @@ if (!Array.isArray(list)) {
   die('pages/community.json should contain a list, fix it and run this again');
 }
 
-const entry = { name: name };
-if (by) entry.by = by;
+const entry = { name: name, by: by };
 entry.description = description;
 entry.url = 'community/' + slug + ext;
 
