@@ -1,0 +1,100 @@
+#!/usr/bin/env node
+'use strict';
+
+// upload "<name>" "<description>" "<file.html>" ["<by>"]
+//
+// copies the file into pages/community/ and adds it to pages/community.json
+//
+//   node upload.js "Sawit RNG" "a luck based clicker" "sawit.html" "danish"
+//
+// the 4th argument is optional and shows up as the "by ..." line on the card
+
+const fs = require('fs');
+const path = require('path');
+
+const ROOT = __dirname;
+const SITE_DIR = path.join(ROOT, 'pages', 'community');
+const LIST = path.join(ROOT, 'pages', 'community.json');
+
+const [name, description, file, by] = process.argv.slice(2);
+
+function die(msg) {
+  console.error('upload: ' + msg);
+  process.exit(1);
+}
+
+function show(p) {
+  return path.relative(ROOT, p).split(path.sep).join('/');
+}
+
+function slugify(value) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || 'site';
+}
+
+if (!name || !description || !file) {
+  die('usage: node upload.js "<name>" "<description>" "<file.html>" ["<by>"]');
+}
+
+const source = path.resolve(process.cwd(), file);
+if (!fs.existsSync(source) || !fs.statSync(source).isFile()) {
+  die('cannot read "' + file + '"');
+}
+
+const slug = slugify(name);
+const ext = path.extname(source) || '.html';
+const dest = path.join(SITE_DIR, slug + ext);
+
+if (fs.existsSync(dest)) {
+  die('pages/community/' + slug + ext + ' already exists — change the name or delete that file first');
+}
+
+// read the list before touching anything, so a broken file never gets clobbered
+let list = [];
+if (fs.existsSync(LIST)) {
+  const raw = fs.readFileSync(LIST, 'utf8').trim();
+  if (raw) {
+    try {
+      list = JSON.parse(raw);
+    } catch (err) {
+      die('pages/community.json is not valid json (' + err.message + ') — fix it, nothing was changed');
+    }
+  }
+}
+if (!Array.isArray(list)) {
+  die('pages/community.json should contain a list, fix it and run this again');
+}
+
+const entry = { name: name };
+if (by) entry.by = by;
+entry.description = description;
+entry.url = 'community/' + slug + ext;
+
+fs.mkdirSync(SITE_DIR, { recursive: true });
+fs.copyFileSync(source, dest);
+
+try {
+  list.push(entry);
+  fs.writeFileSync(LIST, JSON.stringify(list, null, 2) + '\n');
+} catch (err) {
+  fs.unlinkSync(dest);
+  die('could not update pages/community.json (' + err.message + ') — copied file removed');
+}
+
+console.log('added  ' + name);
+console.log('  file  ' + show(dest));
+console.log('  list  ' + show(LIST));
+
+if (ext === '.html' && /(?:src|href)\s*=\s*["']\.{1,2}\//i.test(fs.readFileSync(dest, 'utf8'))) {
+  console.log('');
+  console.log('note: that file links to local paths, which are not copied along with it.');
+  console.log('      use full urls, or drop assets in pages/community/ and point at them.');
+}
+
+console.log('');
+console.log('next:');
+console.log('  git add pages/community pages/community.json');
+console.log('  git commit -m "add ' + name.replace(/"/g, '') + ' to community"');
+console.log('  git push');

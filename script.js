@@ -42,6 +42,7 @@ function renderDesktopIcons(config) {
   const items = [
     { label: 'Terminal', isTerminal: true },
     { label: 'Projects', isFolder: true, url: 'pages/' },
+    { label: 'Community', isFolder: true, url: 'pages/community.html' },
     ...(config.links || []).map(l => ({ label: l.label, icon: l.icon, url: l.url }))
   ];
 
@@ -147,6 +148,11 @@ function runButtonCommand(cmd) {
 
   if (cmd === 'projects') {
     window.location.href = 'pages/';
+    return;
+  }
+
+  if (cmd === 'community') {
+    window.location.href = 'pages/community.html';
     return;
   }
 

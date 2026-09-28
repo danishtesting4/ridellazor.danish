@@ -1,13 +1,18 @@
-function renderProjects(projects) {
-  const grid = document.getElementById('projectsGrid');
+// ── community sites ────────────────────────────────────────────
+// entries are added with `node upload.js` at the repo root
+function renderSites(sites) {
+  const grid = document.getElementById('communityGrid');
   grid.innerHTML = '';
 
-  if (!projects.length) {
-    grid.innerHTML = '<p class="projects-empty">(no projects yet — add some to projects.json)</p>';
+  if (!sites.length) {
+    const empty = document.createElement('p');
+    empty.className = 'projects-empty';
+    empty.textContent = 'nothing here yet — mail one over';
+    grid.appendChild(empty);
     return;
   }
 
-  projects.forEach(p => {
+  sites.forEach(site => {
     const card = document.createElement('div');
     card.className = 'project-card';
 
@@ -16,47 +21,33 @@ function renderProjects(projects) {
 
     const name = document.createElement('span');
     name.className = 'project-name';
-    name.textContent = p.name || 'Untitled';
+    name.textContent = site.name || 'Untitled';
     head.appendChild(name);
-
-    if (p.status) {
-      const status = document.createElement('span');
-      status.className = 'project-status';
-      status.textContent = p.status;
-      head.appendChild(status);
-    }
-
     card.appendChild(head);
 
-    if (p.description) {
+    if (site.by) {
+      const by = document.createElement('span');
+      by.className = 'site-by';
+      by.textContent = 'by ' + site.by;
+      card.appendChild(by);
+    }
+
+    if (site.description) {
       const desc = document.createElement('p');
       desc.className = 'project-desc';
-      desc.textContent = p.description;
+      desc.textContent = site.description;
       card.appendChild(desc);
     }
 
-    if (p.tags && p.tags.length) {
-      const tags = document.createElement('div');
-      tags.className = 'project-tags';
-      p.tags.forEach(t => {
-        const tag = document.createElement('span');
-        tag.className = 'project-tag';
-        tag.textContent = t;
-        tags.appendChild(tag);
-      });
-      card.appendChild(tags);
-    }
-
-    if (p.url) {
+    if (site.url) {
       const link = document.createElement('a');
       link.className = 'project-link';
-      link.href = p.url;
-      const isExternal = /^https?:\/\//i.test(p.url);
-      if (isExternal) {
+      link.href = site.url;
+      link.textContent = 'view →';
+      if (/^https?:\/\//i.test(site.url)) {
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
       }
-      link.textContent = 'view →';
       card.appendChild(link);
     }
 
@@ -64,25 +55,26 @@ function renderProjects(projects) {
   });
 }
 
-fetch('projects.json')
+fetch('community.json')
   .then(res => res.json())
-  .then(renderProjects)
+  .then(renderSites)
   .catch(err => {
-    console.error('Could not load projects.json', err);
-    document.getElementById('projectsGrid').innerHTML =
-      '<p class="projects-empty">could not load projects.json</p>';
+    console.error('Could not load community.json', err);
+    const grid = document.getElementById('communityGrid');
+    const msg = document.createElement('p');
+    msg.className = 'projects-empty';
+    msg.textContent = 'could not load community.json';
+    grid.appendChild(msg);
   });
 
-// ── window controls live in window.js, shared with the other pages ──
-const restoreTerm = window.restoreTerm;
-
+// ── desktop icons ──────────────────────────────────────────────
 function renderDesktopIcons() {
   const grid = document.getElementById('desktopIcons');
   grid.innerHTML = '';
 
   const items = [
     { label: 'Home', url: '../', glyph: '⌂' },
-    { label: 'Community', url: 'community.html', glyph: '📁' },
+    { label: 'Projects', url: './', glyph: '📁' },
     { label: 'Terminal', isTerminal: true, glyph: '>_' }
   ];
 
@@ -101,7 +93,7 @@ function renderDesktopIcons() {
     btn.appendChild(label);
     btn.addEventListener('click', () => {
       if (item.isTerminal) {
-        restoreTerm();
+        window.restoreTerm();
       } else {
         window.location.href = item.url;
       }
@@ -109,4 +101,5 @@ function renderDesktopIcons() {
     grid.appendChild(btn);
   });
 }
+
 renderDesktopIcons();
