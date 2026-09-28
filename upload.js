@@ -11,6 +11,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { refresh, findByAuthor, readPeople, writePeople } = require('./profile.js');
 
 const ROOT = __dirname;
 const SITE_DIR = path.join(ROOT, 'pages', 'community');
@@ -96,6 +97,26 @@ console.log('added  ' + name);
 console.log('  file  ' + show(dest));
 console.log('  list  ' + show(LIST));
 
+// keep the author's profile page in step, if they have one
+const people = readPeople();
+const person = findByAuthor(people, by);
+
+if (person) {
+  person.projects = person.projects || [];
+  const already = person.projects.some(p => p.name === name && p.url === entry.url);
+  if (!already) {
+    person.projects.push({ name: name, description: description, url: entry.url });
+    writePeople(people);
+  }
+  if (refresh(person.slug)) {
+    console.log('  person  pages/people/' + person.slug + '.html');
+  }
+} else {
+  console.log('');
+  console.log('note: no profile for "' + by + '" yet, so the name will not link anywhere.');
+  console.log('      run:  node profile.js "' + by + '" "' + by + '" "' + by + '" "a line about them"');
+}
+
 if (ext === '.html' && /(?:src|href)\s*=\s*["']\.{1,2}\//i.test(fs.readFileSync(dest, 'utf8'))) {
   console.log('');
   console.log('note: that file links to local paths, which are not copied along with it.');
@@ -104,6 +125,6 @@ if (ext === '.html' && /(?:src|href)\s*=\s*["']\.{1,2}\//i.test(fs.readFileSync(
 
 console.log('');
 console.log('next:');
-console.log('  git add pages/community pages/community.json');
+console.log('  git add pages/community pages/community.json pages/people pages/people.json');
 console.log('  git commit -m "add ' + name.replace(/"/g, '') + ' to community"');
 console.log('  git push');

@@ -2,6 +2,15 @@
 
 const EMAIL = 'ridellazorreply@gmail.com';
 
+// slug -> profile page, so an author name can link to their page
+let people = {};
+
+function findPerson(author) {
+  if (!author) return null;
+  const needle = author.trim().toLowerCase();
+  return people[needle] || null;
+}
+
 function setCount(count) {
   const el = document.getElementById('siteCount');
   if (el) el.textContent = count === 1 ? '1 project' : count + ' projects';
@@ -15,33 +24,38 @@ function writeNote(message) {
 }
 
 function renderItem(site) {
-  const row = document.createElement('a');
+  // the row is a plain container, not a link, so the author can link to
+  // their own profile without nesting anchors
+  const row = document.createElement('div');
   row.className = 'item';
-  row.href = site.url || '#';
 
-  if (/^https?:\/\//i.test(site.url || '')) {
-    row.target = '_blank';
-    row.rel = 'noopener noreferrer';
-  }
+  const external = /^https?:\/\//i.test(site.url || '');
 
-  const name = document.createElement('span');
+  const name = document.createElement('a');
   name.className = 'item-name';
+  name.href = site.url || '#';
   name.textContent = site.name || 'Untitled';
+  if (external) {
+    name.target = '_blank';
+    name.rel = 'noopener noreferrer';
+  }
   row.appendChild(name);
 
-  let desc = site.description || '';
-  if (site.by) desc = 'by ' + site.by + (desc ? ' — ' + desc : '');
-  if (desc) {
-    const text = document.createElement('span');
-    text.className = 'item-desc';
-    text.textContent = desc;
-    row.appendChild(text);
+  if (site.by) {
+    const person = findPerson(site.by);
+    const author = document.createElement(person ? 'a' : 'span');
+    author.className = 'item-by';
+    author.textContent = 'by ' + site.by;
+    if (person) author.href = 'people/' + person.slug + '.html';
+    row.appendChild(author);
   }
 
-  const link = document.createElement('span');
-  link.className = 'item-link';
-  link.textContent = /^https?:\/\//i.test(site.url || '') ? 'open →' : 'view →';
-  row.appendChild(link);
+  if (site.description) {
+    const text = document.createElement('span');
+    text.className = 'item-desc';
+    text.textContent = site.description;
+    row.appendChild(text);
+  }
 
   return row;
 }
@@ -62,6 +76,20 @@ function render(sites) {
   sites.forEach(site => frag.appendChild(renderItem(site)));
   list.appendChild(frag);
 }
+
+// the people map is optional — a missing file just leaves authors unlinked
+fetch('people.json')
+  .then(res => (res.ok ? res.json() : []))
+  .then(list => {
+    (Array.isArray(list) ? list : []).forEach(p => {
+      if (!p || !p.slug) return;
+      const keys = [p.slug, p.name, p.handle];
+      keys.forEach(k => {
+        if (k) people[String(k).trim().toLowerCase()] = p;
+      });
+    });
+  })
+  .catch(() => {});
 
 fetch('community.json')
   .then(res => {
