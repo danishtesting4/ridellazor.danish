@@ -7,6 +7,7 @@
 //
 //   node profile.js "<name>" ["<description>"] [--handle <h>] [--pfp <path>]
 //                                   [--links "<Label|url,...>"] [--slug <slug>]
+//                                   [--bio-link "<Label|url>"]
 //
 // everything except the name is optional, so you can add someone with just a
 // name, or with a name and a picture. re-run it with the same name to edit —
@@ -16,6 +17,12 @@
 //   node profile.js "Sam Doe" "makes little tools" --pfp pfp/sam.png --links "GitHub|https://github.com/sam"
 //
 // --pfp takes a path inside the repo, e.g. pfp/avatar.jpg or pfp/sam.png.
+// --bio-link is their own link in bio page if they claimed one somewhere else
+// (vaults.lol, ghosted.bio, whatever). their profile here stays the real one —
+// this just puts a link to the other page on it.
+//
+//   node profile.js "Sam Doe" --bio-link "vaults.lol|https://vaults.lol/sam"
+//
 // upload.js calls refresh() so a person's project list stays current.
 
 const fs = require('fs');
@@ -30,7 +37,8 @@ const SITE = 'RidelLazor';
 const USAGE = [
   'usage: profile.js "<name>" ["<description>"]',
   '              [--handle <handle>] [--pfp <path>]',
-  '              [--links "<Label|url,Label|url>"] [--slug <slug>]'
+  '              [--links "<Label|url,Label|url>"]',
+  '              [--bio-link "<Label|url>"] [--slug <slug>]'
 ].join('\n              ');
 
 function die(msg, showUsage) {
@@ -77,6 +85,17 @@ function parseLinks(raw) {
     if (cut < 1) die('bad link "' + part.trim() + '" — expected Label|url', true);
     return { label: part.slice(0, cut).trim(), url: part.slice(cut + 1).trim() };
   }).filter(l => l.url);
+}
+
+// their other page, e.g. "vaults.lol|https://vaults.lol/sam". must be a real
+// web address, otherwise a typo would quietly produce a dead link.
+function parseBioLink(raw) {
+  if (!raw || !raw.trim()) return null;
+  const parts = parseLinks(raw);
+  if (parts.length !== 1) die('--bio-link takes exactly one link, like "vaults.lol|https://vaults.lol/sam"', true);
+  const link = parts[0];
+  if (!isExternal(link.url)) die('--bio-link needs a full http(s) url, got "' + link.url + '"', true);
+  return link;
 }
 
 function isExternal(url) {
@@ -143,6 +162,15 @@ function buildProfilePage(person) {
       ? '\n  <div class="links">\n' + person.links.map(l =>
           '    <a href="' + esc(l.url) + '"' + (isExternal(l.url) ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' + esc(l.label) + '</a>'
         ).join('\n') + '\n  </div>\n'
+      : '',
+    // their page elsewhere, kept below our own links so this page still reads
+    // as the real one
+    person.bioLink
+      ? '\n  <h2>Elsewhere</h2>\n' +
+        '  <a class="item elsewhere" href="' + esc(person.bioLink.url) + '" target="_blank" rel="noopener noreferrer">\n' +
+        '    <span class="item-name">' + esc(person.bioLink.label) + '</span>\n' +
+        '    <span class="item-desc">their link in bio</span>\n' +
+        '  </a>\n'
       : '',
     '',
     '  <h2>Projects</h2>',
@@ -219,7 +247,8 @@ function findByAuthor(people, author) {
 // name and description are positional, the rest are flags. that way you never
 // have to leave an empty slot to reach the picture, which is the fiddly bit.
 function parseArgs(argv) {
-  const flags = { handle: '', pfp: '', links: '', slug: '' };
+  // null means "flag not passed" — so a re-run keeps whatever was already set
+  const flags = { handle: '', pfp: '', links: '', bioLink: null, slug: '' };
   const positional = [];
 
   for (let i = 0; i < argv.length; i++) {
@@ -233,6 +262,7 @@ function parseArgs(argv) {
     if (key === 'handle') flags.handle = argv[++i] || '';
     else if (key === 'pfp' || key === 'avatar') flags.pfp = argv[++i] || '';
     else if (key === 'links') flags.links = argv[++i] || '';
+    else if (key === 'bio-link' || key === 'biolink' || key === 'elsewhere') flags.bioLink = argv[++i] ?? '';
     else if (key === 'slug') flags.slug = argv[++i] || '';
     else if (key === 'help' || key === 'h') { console.log(USAGE); process.exit(0); }
     else die('unknown option "' + arg + '"', true);
@@ -246,6 +276,7 @@ function parseArgs(argv) {
     handle: flags.handle.trim().replace(/^@/, ''),
     pfp: flags.pfp.trim(),
     links: flags.links,
+    bioLink: flags.bioLink,
     slug: flags.slug.trim()
   };
 }
@@ -267,6 +298,7 @@ function main() {
   }
 
   const links = parseLinks(args.links);
+  const bioLink = parseBioLink(args.bioLink);
   const people = readPeople();
 
   // an explicit --slug picks that person, otherwise match on an existing name
@@ -281,6 +313,7 @@ function main() {
   person.bio = args.bio;
   if (links.length) person.links = links;
   else if (!person.links) person.links = [];
+  if (bioLink) person.bioLink = bioLink;
   if (args.pfp) person.avatar = args.pfp;
   person.projects = person.projects || [];
 

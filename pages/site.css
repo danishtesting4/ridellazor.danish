@@ -159,11 +159,24 @@ h2 {
 .item-name:hover,
 .item-by:hover { text-decoration: underline; }
 
+.item:focus-visible,
 .item-name:focus-visible,
 .item-by:focus-visible {
   outline: 2px solid var(--black);
   outline-offset: 3px;
 }
+
+/* a link that leaves the site — same row, quieter, and says where it goes */
+.elsewhere {
+  text-decoration: none;
+  border: 1px solid var(--line);
+  padding: 18px 20px;
+  margin-top: 4px;
+}
+
+.elsewhere .item-name { font-weight: 500; }
+
+.elsewhere .item-desc { text-align: right; }
 
 /* ── empty / error ────────────────────────────────────────── */
 
@@ -210,6 +223,7 @@ a:hover { text-decoration: underline; }
   }
   .item-by,
   .item-desc { display: block; margin-top: 4px; }
+  .elsewhere .item-desc { text-align: left; }
   h1 { font-size: 26px; }
   .person { align-items: flex-start; }
 }
