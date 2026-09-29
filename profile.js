@@ -29,8 +29,12 @@
 // (vaults.lol, ghosted.bio, whatever). their profile here stays the real one —
 // this just puts a link to the other page on it.
 //
+// every run commits and pushes, so a codespace needs no extra steps. --no-push
+// turns that off if you want to batch a few people into one commit.
+//
 // upload.js calls refresh() so a person's project list stays current.
 
+const { execFileSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -43,7 +47,7 @@ const USAGE = [
   'usage: profile.js "<name>" ["<description>"]',
   '              [--handle <handle>] [--pfp <path>]',
   '              [--links "<Label|url,Label|url>"]',
-  '              [--bio-link "<Label|url>"] [--slug <slug>]'
+  '              [--bio-link "<Label|url>"] [--slug <slug>] [--no-push]'
 ].join('\n              ');
 
 function die(msg, showUsage) {
@@ -203,7 +207,7 @@ function storePicture(slug, source) {
 // have to leave an empty slot to reach the picture, which is the fiddly bit.
 function parseArgs(argv) {
   // null means "flag not passed" — so a re-run keeps whatever was already set
-  const flags = { handle: '', pfp: '', links: '', bioLink: null, slug: '' };
+  const flags = { handle: '', pfp: '', links: '', bioLink: null, slug: '', push: true };
   const positional = [];
 
   for (let i = 0; i < argv.length; i++) {
@@ -219,6 +223,7 @@ function parseArgs(argv) {
     else if (key === 'links') flags.links = argv[++i] || '';
     else if (key === 'bio-link' || key === 'biolink' || key === 'elsewhere') flags.bioLink = argv[++i] ?? '';
     else if (key === 'slug') flags.slug = argv[++i] || '';
+    else if (key === 'no-push' || key === 'nopush') flags.push = false;
     else if (key === 'help' || key === 'h') { console.log(USAGE); process.exit(0); }
     else die('unknown option "' + arg + '"', true);
   }
@@ -232,8 +237,74 @@ function parseArgs(argv) {
     pfp: flags.pfp.trim(),
     links: flags.links,
     bioLink: flags.bioLink,
-    slug: flags.slug.trim()
+    slug: flags.slug.trim(),
+    push: flags.push
   };
+}
+
+// ── committing and pushing ─────────────────────────────────────
+// the files are already written by the time we get here, so a push that fails
+// must not lose the work — it reports what to run by hand and carries on.
+function git(args) {
+  return execFileSync('git', args, {
+    cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], windowsHide: true
+  });
+}
+
+function gitWhy(err) {
+  return String((err && (err.stderr || err.message)) || err).trim().split('\n')[0];
+}
+
+// a codespace often has no user.name/user.email set, and plain `git commit`
+// would then fail. rather than invent an identity, reuse whoever made the last
+// commit, so the new commit looks like the rest of the history.
+function gitIdentity() {
+  try {
+    if (git(['config', 'user.email']).trim()) return [];
+  } catch (err) { /* no config, fall through */ }
+  try {
+    const [name, email] = git(['log', '-1', '--format=%an%x00%ae']).split('\x00');
+    if (email) return ['-c', 'user.name=' + name.trim(), '-c', 'user.email=' + email.trim()];
+  } catch (err) { /* no commits yet, let git decide */ }
+  return [];
+}
+
+function commitAndPush(person, created) {
+  // stage only this profile and the two generated files. never `add -A`, so
+  // an edit you are halfway through never gets published by accident.
+  const paths = ['pages/people/' + person.slug, 'pages/people.html', 'pages/people/index.json'];
+  const label = (created ? 'Add ' : 'Update ') + person.name;
+  const message = label + (person.handle ? ' (@' + person.handle + ')' : '');
+
+  try {
+    git(['rev-parse', '--is-inside-work-tree']);
+  } catch (err) {
+    console.log('  git     not a git repo, so nothing was pushed');
+    return;
+  }
+
+  let branch;
+  try {
+    branch = git(['rev-parse', '--abbrev-ref', 'HEAD']).trim();
+    git(['add', '--'].concat(paths));
+
+    // a re-run that changed nothing should not make an empty commit
+    if (!git(['diff', '--cached', '--name-only']).trim()) {
+      console.log('  git     nothing changed, nothing to commit');
+      return;
+    }
+
+    git(gitIdentity().concat(['commit', '-q', '-m', message]));
+    const sha = git(['rev-parse', '--short', 'HEAD']).trim();
+    git(['push', '-q', 'origin', branch]);
+    console.log('  git     ' + sha + '  pushed to origin/' + branch);
+  } catch (err) {
+    console.log('  git     could not push: ' + gitWhy(err));
+    console.log('          the files are written, so finish it by hand:');
+    console.log('            git add ' + paths.join(' '));
+    console.log('            git commit -m "' + message.replace(/"/g, '') + '"');
+    console.log('            git push origin ' + (branch || 'main'));
+  }
 }
 
 // ── page building ──────────────────────────────────────────────
@@ -482,6 +553,9 @@ function main() {
   console.log('  page     /people/' + slug + '/');
   console.log('  config   pages/people/' + slug + '/config.json');
   console.log('  bio      pages/people/' + slug + '/description.txt');
+
+  if (args.push) commitAndPush(person, !existing);
+  else console.log('  git      skipped (--no-push)');
 }
 
 module.exports = { refresh, findByAuthor, listPeople, readPerson, writeProjects, personDir, writeIndexPage };
