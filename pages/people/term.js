@@ -2,7 +2,7 @@
 // person is baked into the page by profile.js instead of fetched from
 // config.json, so this reads a <script id="personData"> block.
 //
-// window controls live in ../window.js and are shared with the home page.
+// window controls live in ../../window.js and are shared with the home page.
 (function () {
   const dataEl = document.getElementById('personData');
   if (!dataEl) return;
@@ -34,10 +34,11 @@
       if (typeof window.restoreTerm === 'function') window.restoreTerm();
     };
 
+    // people/ and community/ live two levels up from pages/people/<slug>/
     const items = [
       { label: 'Terminal', glyph: '>_', action: restore },
-      { label: 'People', glyph: '\u{1F4C1}', url: '../people.html' },
-      { label: 'Community', glyph: '\u{1F4C1}', url: '../community.html' }
+      { label: 'People', glyph: '\u{1F4C1}', url: '../../people.html' },
+      { label: 'Community', glyph: '\u{1F4C1}', url: '../../community.html' }
     ].concat(links.map(l => ({ label: l.label, icon: l.icon, url: l.url })));
 
     items.forEach(item => {
