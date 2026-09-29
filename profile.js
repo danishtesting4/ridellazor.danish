@@ -77,13 +77,20 @@ function esc(value) {
     .replace(/"/g, '&quot;');
 }
 
-// "GitHub|https://..., YouTube|https://..."
+// "GitHub|https://..., YouTube|https://..." and optionally a third field for
+// the little square icon, "GitHub|https://github.com/x|https://icon.url"
 function parseLinks(raw) {
   if (!raw || !raw.trim()) return [];
   return raw.split(',').map(part => {
-    const cut = part.indexOf('|');
-    if (cut < 1) die('bad link "' + part.trim() + '" — expected Label|url', true);
-    return { label: part.slice(0, cut).trim(), url: part.slice(cut + 1).trim() };
+    const bits = part.split('|');
+    if (bits.length < 2 || !bits[0].trim() || !bits[1].trim()) {
+      die('bad link "' + part.trim() + '" — expected Label|url', true);
+    }
+    return {
+      label: bits[0].trim(),
+      url: bits[1].trim(),
+      icon: (bits[2] || '').trim() || undefined
+    };
   }).filter(l => l.url);
 }
 
@@ -109,11 +116,22 @@ function rebase(url, prefix) {
   return (isExternal(u) || u.startsWith('/') || u.startsWith(prefix)) ? u : prefix + u;
 }
 
-function page(head, body) {
+function page(head, body, scripts) {
   return '<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n' +
     '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
     head +
-    '</head>\n<body>\n\n' + body + '\n\n</body>\n</html>\n';
+    '</head>\n<body>\n\n' + body + '\n\n' +
+    (scripts || '') +
+    '\n</body>\n</html>\n';
+}
+
+// JSON dropped into a <script> block must not be able to close the tag.
+// \u003c is "<" as far as JSON.parse is concerned, so escaping it is invisible.
+function safeJson(value) {
+  return JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026');
 }
 
 function nav(links) {
@@ -140,52 +158,108 @@ function projectList(projects, prefix, emptyMessage) {
   ).join('\n');
 }
 
+// a link row, same shape as the "ls links/" rows on the home page
+function linkRow(link, note, extraClass) {
+  return '    <li><a href="' + esc(link.url) + '"' +
+    (isExternal(link.url) ? ' target="_blank" rel="noopener noreferrer"' : '') +
+    (extraClass ? ' class="' + extraClass + '"' : '') + '>' +
+    (link.icon ? '<img src="' + esc(link.icon) + '" alt="" loading="lazy"> ' : '') +
+    esc(link.label) +
+    (note ? '<span class="ls-desc">' + esc(note) + '</span>' : '') +
+    '</a></li>';
+}
+
 function buildProfilePage(person) {
-  // this page lives at pages/people/<slug>.html
+  // this page lives at pages/people/<slug>.html and uses the site's terminal
+  // theme, same as the home page. the person is baked in, so no fetch needed.
+  const handle = person.handle || person.slug;
+  const links = person.links || [];
+  const projects = person.projects || [];
+
   const body = [
-    nav({ home: '../../', projects: '../', people: '../people.html' }),
-    '',
-    '<main class="main">',
-    '',
-    '  <div class="person">',
-    person.avatar
-      ? '    <img class="avatar" src="../../' + esc(person.avatar) + '" alt="">'
-      : '',
-    '    <div>',
-    '      <h1>' + esc(person.name) + '</h1>',
-    person.handle ? '      <p class="handle">@' + esc(person.handle) + '</p>' : '',
+    '<main class="term" id="term">',
+    '  <div class="term-bar">',
+    '    <span class="term-title">' + esc(handle) + '@site: ~</span>',
+    '    <div class="win-controls">',
+    '      <span class="win-btn" id="btnMin" title="Minimize">\u2013</span>',
+    '      <span class="win-btn" id="btnMax" title="Maximize">\u25A2</span>',
+    '      <span class="win-btn win-close" id="btnClose" title="Close">\u00D7</span>',
     '    </div>',
     '  </div>',
     '',
-    person.bio ? '  <p class="bio">' + esc(person.bio) + '</p>' : '',
-    person.links && person.links.length
-      ? '\n  <div class="links">\n' + person.links.map(l =>
-          '    <a href="' + esc(l.url) + '"' + (isExternal(l.url) ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' + esc(l.label) + '</a>'
-        ).join('\n') + '\n  </div>\n'
-      : '',
+    '  <div class="term-body" id="termBody">',
+    '    <div class="line prompt-line"><span class="prompt">$</span> whoami</div>',
+    '',
+    '    <div class="identity">',
+    person.avatar
+      ? '      <img class="pfp" src="../../' + esc(person.avatar) + '" alt="' + esc(person.name) + ' profile picture">'
+      : '      <img class="pfp" src="../../pfp/avatar.jpg" alt="">',
+    '      <div class="identity-text">',
+    '        <h1>' + esc(person.name) + '</h1>',
+    person.handle ? '        <p class="handle">@' + esc(person.handle) + '</p>' : '',
+    person.bio ? '        <p class="desc">' + esc(person.bio) + '</p>' : '',
+    '      </div>',
+    '    </div>',
+    '',
+    '    <div class="line prompt-line"><span class="prompt">$</span> ls links/</div>',
+    links.length
+      ? '    <ul class="ls">\n' + links.map(l => linkRow(l)).join('\n') + '\n    </ul>'
+      : '    <p class="empty">nothing here yet</p>',
+    '',
     // their page elsewhere, kept below our own links so this page still reads
     // as the real one
     person.bioLink
-      ? '\n  <h2>Elsewhere</h2>\n' +
-        '  <a class="item elsewhere" href="' + esc(person.bioLink.url) + '" target="_blank" rel="noopener noreferrer">\n' +
-        '    <span class="item-name">' + esc(person.bioLink.label) + '</span>\n' +
-        '    <span class="item-desc">their link in bio</span>\n' +
-        '  </a>\n'
+      ? '    <div class="line prompt-line"><span class="prompt">$</span> cat bio-page.txt</div>\n' +
+        '    <ul class="ls">\n' + linkRow(person.bioLink, 'their link in bio', 'leaving') + '\n    </ul>\n'
       : '',
     '',
-    '  <h2>Projects</h2>',
-    '  <p class="count">' + (person.projects.length === 1 ? '1 project' : person.projects.length + ' projects') + '</p>',
+    '    <div class="line prompt-line"><span class="prompt">$</span> ls projects/</div>',
+    projects.length
+      ? '    <ul class="ls">\n' + projects.map(p =>
+          '      <li><a href="' + esc(rebase(p.url, '../')) + '"' +
+          (isExternal(p.url) ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' +
+          esc(p.name) + '</a></li>'
+        ).join('\n') + '\n    </ul>\n' +
+        projects.filter(p => p.description).map(p => '    <p class="ls-note">' + esc(p.name) + ' \u2014 ' + esc(p.description) + '</p>').join('\n')
+      : '    <p class="empty">no projects yet</p>',
     '',
-    projectList(person.projects, '../', 'No projects yet.'),
+    '    <div class="line prompt-line"><span class="prompt">$</span> cd ..</div>',
+    '    <div class="line"><a class="nav-link" href="../people.html">people/</a></div>',
+    '    <div class="line"><a class="nav-link" href="../community.html">community/</a></div>',
+    '    <div class="line"><a class="nav-link" href="../../">home/</a></div>',
     '',
-    '</main>'
-  ].filter(line => line !== undefined).join('\n');
+    '    <div class="term-buttons" id="termButtons">',
+    '      <button class="term-btn" data-cmd="whoami">whoami</button>',
+    '      <button class="term-btn" data-cmd="about">about</button>',
+    '      <button class="term-btn" data-cmd="projects">projects</button>',
+    '      <button class="term-btn" data-cmd="links">links</button>',
+    '      <button class="term-btn" data-cmd="date">date</button>',
+    '      <button class="term-btn" data-cmd="clear">clear</button>',
+    '    </div>',
+    '',
+    '    <div class="term-history" id="termHistory"></div>',
+    '  </div>',
+    '</main>',
+    '',
+    '<div class="desktop" id="desktop">',
+    '  <div class="desktop-icons" id="desktopIcons"></div>',
+    '  <button class="taskbar-item" id="restoreBtn">',
+    '    <span class="taskbar-dot"></span> ' + esc(handle) + '@site: ~',
+    '  </button>',
+    '</div>'
+  ].filter(line => line !== undefined && line !== '').join('\n');
 
   return page(
-    '<title>' + esc(person.name) + ' — ' + SITE + '</title>\n' +
+    '<title>whoami</title>\n' +
     '<link rel="icon" href="../../pfp/avatar.jpg">\n' +
-    '<link rel="stylesheet" href="../site.css">',
-    body
+    '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
+    '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
+    '<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">\n' +
+    '<link rel="stylesheet" href="../../style.css">\n' +
+    '<link rel="stylesheet" href="term.css">\n' +
+    '<script id="personData" type="application/json">' + safeJson(person) + '</' + 'script>',
+    body,
+    '<script src="../window.js"></' + 'script>\n<script src="term.js"></' + 'script>'
   );
 }
 

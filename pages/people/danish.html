@@ -3,47 +3,66 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RidelL — RidelLazor</title>
+<title>whoami</title>
 <link rel="icon" href="../../pfp/avatar.jpg">
-<link rel="stylesheet" href="../site.css"></head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../style.css">
+<link rel="stylesheet" href="term.css">
+<script id="personData" type="application/json">{"slug":"danish","projects":[],"name":"RidelL","handle":"RidelLazor","bio":"hi, im danish/ridellazor.more things will come here :\u003e","links":[{"label":"GitHub","url":"https://github.com/RidelLazor"},{"label":"YouTube","url":"https://youtube.com/@ridellazor"},{"label":"Mail","url":"mailto:ridellazorreply@gmail.com"}],"avatar":"pfp/avatar.jpg"}</script></head>
 <body>
 
-<nav class="nav">
-  <div class="nav-inner">
-    <a class="nav-brand" href="../../">RidelLazor</a>
-    <div class="nav-links">
-      <a href="../people.html">People</a>
-      <a href="../">Projects</a>
-      <a href="../../">Home</a>
+<main class="term" id="term">
+  <div class="term-bar">
+    <span class="term-title">RidelLazor@site: ~</span>
+    <div class="win-controls">
+      <span class="win-btn" id="btnMin" title="Minimize">–</span>
+      <span class="win-btn" id="btnMax" title="Maximize">▢</span>
+      <span class="win-btn win-close" id="btnClose" title="Close">×</span>
     </div>
   </div>
-</nav>
-
-<main class="main">
-
-  <div class="person">
-    <img class="avatar" src="../../pfp/avatar.jpg" alt="">
-    <div>
-      <h1>RidelL</h1>
-      <p class="handle">@RidelLazor</p>
+  <div class="term-body" id="termBody">
+    <div class="line prompt-line"><span class="prompt">$</span> whoami</div>
+    <div class="identity">
+      <img class="pfp" src="../../pfp/avatar.jpg" alt="RidelL profile picture">
+      <div class="identity-text">
+        <h1>RidelL</h1>
+        <p class="handle">@RidelLazor</p>
+        <p class="desc">hi, im danish/ridellazor.more things will come here :&gt;</p>
+      </div>
     </div>
+    <div class="line prompt-line"><span class="prompt">$</span> ls links/</div>
+    <ul class="ls">
+    <li><a href="https://github.com/RidelLazor" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+    <li><a href="https://youtube.com/@ridellazor" target="_blank" rel="noopener noreferrer">YouTube</a></li>
+    <li><a href="mailto:ridellazorreply@gmail.com">Mail</a></li>
+    </ul>
+    <div class="line prompt-line"><span class="prompt">$</span> ls projects/</div>
+    <p class="empty">no projects yet</p>
+    <div class="line prompt-line"><span class="prompt">$</span> cd ..</div>
+    <div class="line"><a class="nav-link" href="../people.html">people/</a></div>
+    <div class="line"><a class="nav-link" href="../community.html">community/</a></div>
+    <div class="line"><a class="nav-link" href="../../">home/</a></div>
+    <div class="term-buttons" id="termButtons">
+      <button class="term-btn" data-cmd="whoami">whoami</button>
+      <button class="term-btn" data-cmd="about">about</button>
+      <button class="term-btn" data-cmd="projects">projects</button>
+      <button class="term-btn" data-cmd="links">links</button>
+      <button class="term-btn" data-cmd="date">date</button>
+      <button class="term-btn" data-cmd="clear">clear</button>
+    </div>
+    <div class="term-history" id="termHistory"></div>
   </div>
-
-  <p class="bio">hi, im danish/ridellazor.more things will come here :&gt;</p>
-
-  <div class="links">
-    <a href="https://github.com/RidelLazor" target="_blank" rel="noopener noreferrer">GitHub</a>
-    <a href="https://youtube.com/@ridellazor" target="_blank" rel="noopener noreferrer">YouTube</a>
-    <a href="mailto:ridellazorreply@gmail.com">Mail</a>
-  </div>
-
-
-  <h2>Projects</h2>
-  <p class="count">0 projects</p>
-
-<p class="note">No projects yet.</p>
-
 </main>
+<div class="desktop" id="desktop">
+  <div class="desktop-icons" id="desktopIcons"></div>
+  <button class="taskbar-item" id="restoreBtn">
+    <span class="taskbar-dot"></span> RidelLazor@site: ~
+  </button>
+</div>
 
+<script src="../window.js"></script>
+<script src="term.js"></script>
 </body>
 </html>

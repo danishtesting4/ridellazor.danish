@@ -1,0 +1,68 @@
+/* profile pages only — layers on top of the site's terminal theme (../../style.css).
+   the plain community and people index keep using site.css. */
+
+/* a file listing, same shape as the "ls links/" rows on the home page */
+.ls {
+  list-style: none;
+  margin: 10px 0 18px;
+  padding: 0;
+}
+
+.ls li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  margin-bottom: 4px;
+  border: 1px solid var(--border);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 13px;
+}
+
+.ls li a:hover,
+.ls li a:focus-visible {
+  border-color: var(--accent);
+  background: #1b1914;
+}
+
+.ls li a img {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.ls-desc {
+  color: var(--muted);
+  margin-left: auto;
+  padding-left: 14px;
+  font-size: 12px;
+  text-align: right;
+}
+
+/* the note under a row, e.g. what a project is */
+.ls-note {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 2px 0 10px;
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 10px 0 18px;
+}
+
+/* a row that leaves the site */
+.leaving .ls-desc {
+  color: var(--accent);
+}
+
+@media (max-width: 600px) {
+  .ls-desc {
+    display: block;
+    margin: 4px 0 0;
+    text-align: left;
+  }
+}

@@ -77,47 +77,6 @@ h1 {
   font-size: 16px;
 }
 
-/* ── person (profile pages) ────────────────────────────────── */
-
-.person {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.avatar {
-  width: 96px;
-  height: 96px;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.handle {
-  margin: 2px 0 0;
-  color: var(--gray);
-  font-size: 15px;
-}
-
-.bio {
-  margin: 12px 0 0;
-  max-width: 60ch;
-  color: var(--gray);
-  font-size: 16px;
-}
-
-.links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin: 20px 0 0;
-}
-
-h2 {
-  margin: 44px 0 0;
-  font-size: 20px;
-  font-weight: 700;
-}
-
 .count {
   margin: 30px 0 0;
   color: var(--gray);
@@ -166,18 +125,6 @@ h2 {
   outline-offset: 3px;
 }
 
-/* a link that leaves the site — same row, quieter, and says where it goes */
-.elsewhere {
-  text-decoration: none;
-  border: 1px solid var(--line);
-  padding: 18px 20px;
-  margin-top: 4px;
-}
-
-.elsewhere .item-name { font-weight: 500; }
-
-.elsewhere .item-desc { text-align: right; }
-
 /* ── empty / error ────────────────────────────────────────── */
 
 .note {
@@ -223,7 +170,5 @@ a:hover { text-decoration: underline; }
   }
   .item-by,
   .item-desc { display: block; margin-top: 4px; }
-  .elsewhere .item-desc { text-align: left; }
   h1 { font-size: 26px; }
-  .person { align-items: flex-start; }
 }
