@@ -10,7 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../../style.css">
 <link rel="stylesheet" href="../term.css">
-<script id="personData" type="application/json">{"slug":"danish","name":"RidelL","handle":"RidelLazor","bio":"hi, im danish/ridellazor.more things will come here :\u003e","links":[{"label":"GitHub","url":"https://github.com/RidelLazor"},{"label":"YouTube","url":"https://youtube.com/@ridellazor"},{"label":"Mail","url":"mailto:ridellazorreply@gmail.com"}],"bioLink":null,"avatar":"pfp/avatar.webp","projects":[{"name":"Hello Page","description":"a hello page with a guard","url":"community/hello-page.html"}]}</script></head>
+<script id="personData" type="application/json">{"slug":"danish","name":"RidelL","handle":"RidelLazor","bio":"hi, im danish/ridellazor.more things will come here :\u003e","links":[{"label":"GitHub","url":"https://github.com/RidelLazor"},{"label":"YouTube","url":"https://youtube.com/@ridellazor"},{"label":"Mail","url":"mailto:ridellazorreply@gmail.com"}],"bioLink":null,"discordId":"1384132553761493082","avatar":"pfp/avatar.jpg","projects":[{"name":"Hello Page","description":"a hello page with a guard","url":"community/hello-page.html"}]}</script></head>
 <body>
 
 <main class="term" id="term">
@@ -25,7 +25,7 @@
   <div class="term-body" id="termBody">
     <div class="line prompt-line"><span class="prompt">$</span> whoami</div>
     <div class="identity">
-      <img class="pfp" src="pfp/avatar.webp" alt="RidelL profile picture">
+      <img class="pfp" src="pfp/avatar.jpg" alt="RidelL profile picture">
       <div class="identity-text">
         <h1>RidelL</h1>
         <p class="handle">@RidelLazor</p>
@@ -43,6 +43,8 @@
       <li><a href="../../community/hello-page.html">Hello Page</a></li>
     </ul>
     <p class="ls-note">Hello Page — a hello page with a guard</p>
+    <div class="line prompt-line"><span class="prompt">$</span> check discord</div>
+    <div class="line"><span class="out" id="discordPresence">checking…</span></div>
     <div class="line prompt-line"><span class="prompt">$</span> cd ..</div>
     <div class="line"><a class="nav-link" href="../../people.html">people/</a></div>
     <div class="line"><a class="nav-link" href="../../community.html">community/</a></div>
@@ -53,6 +55,7 @@
       <button class="term-btn" data-cmd="projects">projects</button>
       <button class="term-btn" data-cmd="links">links</button>
       <button class="term-btn" data-cmd="date">date</button>
+      <button class="term-btn" data-cmd="discord">discord</button>
       <button class="term-btn" data-cmd="clear">clear</button>
     </div>
     <div class="term-history" id="termHistory"></div>

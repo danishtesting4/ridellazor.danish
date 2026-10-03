@@ -18,6 +18,47 @@
   const links = person.links || [];
   const projects = person.projects || [];
 
+  // ── discord presence (Lanyard) ─────────────────────────────────
+  // person.discordId is set per-profile in config.json. the lanyard api
+  // allows cors, so a browser fetch works from github pages directly.
+  const LANYARD = 'https://api.lanyard.live/v1/users/';
+  const STATUS_COLOR = { online: '#2db544', idle: '#b3ad30', dnd: '#b0413e', offline: '#8a8578' };
+  const ACTIVITY_ICON = { LISTENING: '🎧', STREAMING: '📺', PLAYING: '🎮', WATCHING: '📺', COMPETING: '🏆', CUSTOM_STATUS: '🟣' };
+
+  function renderPresence() {
+    const el = document.getElementById('discordPresence');
+    if (!el) return;
+    if (!person.discordId) { el.textContent = 'no discord id'; return; }
+
+    el.innerHTML = '<span class="muted">discord: checking…</span>';
+    fetch(LANYARD + person.discordId)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        const p = d && d.data;
+        if (!p) { el.textContent = 'discord: presence unavailable'; return; }
+        const state = p.status || 'offline';
+        const dot = '<span class="dot" style="background:' + (STATUS_COLOR[state] || STATUS_COLOR.offline) + '"></span>';
+        const name = p.username || person.handle || 'someone';
+        const avatar = p.avatar
+          ? '<img src="https://cdn.discordapp.com/avatars/' + person.discordId + '/' + p.avatar + '.' + (String(p.avatar).startsWith('a_') ? 'gif' : 'png') + '?size=32" alt="' + escapeHtml(name) + '" loading="lazy">'
+          : '';
+        const act = Array.isArray(p.activities) ? p.activities.find(a => a.type !== 'CUSTOM_STATUS') : null;
+        let activity = '';
+        if (act) {
+          const icon = ACTIVITY_ICON[act.type] || '•';
+          const val = act.state || act.details || act.name || '';
+          activity = '  ' + icon + ' ' + (act.name || '') + (val ? ' — ' + val : '');
+        }
+        const label = p.online ? 'online (' + state + ')' : 'offline';
+        el.innerHTML = dot + ' ' + avatar + escapeHtml(name) + ' — ' + label + (activity ? '<span class="muted">' + escapeHtml(activity) + '</span>' : '');
+      })
+      .catch(() => { el.textContent = 'discord: could not load presence'; });
+  }
+
+  // load once, then refresh periodically — presence changes are infrequent
+  renderPresence();
+  setInterval(renderPresence, 1000 * 60 * 2);
+
   function escapeHtml(str) {
     return String(str == null ? '' : str)
       .replace(/&/g, '&amp;')
@@ -109,6 +150,12 @@
 
       if (cmd === 'clear') {
         if (history) history.innerHTML = '';
+        return;
+      }
+
+      if (cmd === 'discord') {
+        append('<span class="prompt">$</span> ' + escapeHtml(cmd));
+        renderPresence();
         return;
       }
 

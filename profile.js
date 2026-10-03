@@ -114,6 +114,7 @@ function readPerson(slug) {
     bio: fs.existsSync(descFile) ? fs.readFileSync(descFile, 'utf8').trim() : '',
     links: Array.isArray(config.links) ? config.links : [],
     bioLink: config.bioLink || null,
+    discordId: config.discordId || null,
     avatar: config.pfp || null,
     projects: Array.isArray(projects) ? projects : []
   };
@@ -128,8 +129,9 @@ function writePerson(person) {
   const config = { name: person.name };
   if (person.handle) config.handle = person.handle;
   if (person.links && person.links.length) config.links = person.links;
-  if (person.bioLink) config.bioLink = person.bioLink;
-  if (person.avatar) config.pfp = person.avatar;
+   if (person.bioLink) config.bioLink = person.bioLink;
+   if (person.discordId) config.discordId = person.discordId;
+   if (person.avatar) config.pfp = person.avatar;
   writeJson(path.join(dir, 'config.json'), config);
 
   fs.writeFileSync(path.join(dir, 'description.txt'), (person.bio || '') + '\n');
@@ -416,7 +418,11 @@ function buildProfilePage(person) {
           esc(p.name) + '</a></li>'
         ).join('\n') + '\n    </ul>\n' +
         projects.filter(p => p.description).map(p => '    <p class="ls-note">' + esc(p.name) + ' \u2014 ' + esc(p.description) + '</p>').join('\n')
-      : '    <p class="empty">no projects yet</p>',
+       : '    <p class="empty">no projects yet</p>',
+    '',
+    '    <div class="line prompt-line"><span class="prompt">$</span> check discord</div>',
+    '    <div class="line"><span class="out" id="discordPresence">checking…</span></div>',
+
     '',
     '    <div class="line prompt-line"><span class="prompt">$</span> cd ..</div>',
     '    <div class="line"><a class="nav-link" href="../../people.html">people/</a></div>',
@@ -429,6 +435,7 @@ function buildProfilePage(person) {
     '      <button class="term-btn" data-cmd="projects">projects</button>',
     '      <button class="term-btn" data-cmd="links">links</button>',
     '      <button class="term-btn" data-cmd="date">date</button>',
+    '      <button class="term-btn" data-cmd="discord">discord</button>',
     '      <button class="term-btn" data-cmd="clear">clear</button>',
     '    </div>',
     '',
