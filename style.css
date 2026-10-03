@@ -382,7 +382,7 @@ body {
 }
 
 #discordPresence .muted { color: var(--muted); }
-#discordPresence img { width: 16px; height: 16px; vertical-align: middle; }
+#discordPresence img { width: 20px; height: 20px; vertical-align: middle; border-radius: 4px; margin: 0 4px 0 -2px; }
 
 
 .cursor {

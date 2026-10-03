@@ -126,6 +126,9 @@ function renderPresence(config) {
       const state = p.status || 'offline';
       const dot = '<span class="dot" style="background:' + (STATUS_COLOR[state] || STATUS_COLOR.offline) + '"></span>';
       const name = p.username || config.handle || config.name || 'someone';
+      const avatar = p.avatar
+        ? '<img src="https://cdn.discordapp.com/avatars/' + config.discordId + '/' + p.avatar + '.' + (String(p.avatar).startsWith('a_') ? 'gif' : 'png') + '?size=32" alt="' + escapeHtml(name) + '" loading="lazy">'
+        : '';
 
       // current activity (a song, a game, whatever), lanyard types are strings
       const act = Array.isArray(p.activities) ? p.activities.find(a => a.type !== 'CUSTOM_STATUS') : null;
@@ -137,7 +140,7 @@ function renderPresence(config) {
       }
 
       const stateLabel = p.online ? 'online (' + state + ')' : 'offline';
-      el.innerHTML = dot + ' ' + escapeHtml(name) + ' — ' + stateLabel + (activity ? '<span class="muted">' + escapeHtml(activity) + '</span>' : '');
+      el.innerHTML = dot + ' ' + avatar + escapeHtml(name) + ' — ' + stateLabel + (activity ? '<span class="muted">' + escapeHtml(activity) + '</span>' : '');
     })
     .catch(() => {
       el.textContent = 'discord: could not load presence';
