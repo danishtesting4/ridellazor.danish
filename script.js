@@ -91,10 +91,76 @@ Promise.all([
     siteConfig = config;
     render(config);
     renderDesktopIcons(config);
+    addDiscordLink(config);
+    renderPresence(config);
+    // refresh presence every couple of minutes, discord changes are infrequent
+    setInterval(() => renderPresence(config), 1000 * 60 * 2);
   })
   .catch(err => {
     console.error('Could not load config.json or description.txt', err);
   });
+
+// ── discord presence (Lanyard) ───────────────────────────────
+// config.discordId (your numeric discord id) is the only requirement. the
+// lanyard api sends cors: a * headers, so this works from the browser on
+// github pages without any proxy.
+const LANYARD = 'https://api.lanyard.live/v1/users/';
+const STATUS_COLOR = { online: '#2db544', idle: '#b3ad30', dnd: '#b0413e', offline: '#8a8578' };
+const ACTIVITY_ICON = { LISTENING: '🎧', STREAMING: '📺', PLAYING: '🎮', WATCHING: '📺', COMPETING: '🏆', CUSTOM_STATUS: '🟣' };
+
+function renderPresence(config) {
+  const el = document.getElementById('discordPresence');
+  if (!el || !config || !config.discordId) {
+    if (el) el.textContent = 'no discord id configured';
+    return;
+  }
+
+  el.innerHTML = '<span class="muted">discord: checking…</span>';
+
+  fetch(LANYARD + config.discordId)
+    .then(r => r.ok ? r.json() : null)
+    .then(d => {
+      const p = d && d.data;
+      if (!p) { el.textContent = 'discord: presence unavailable'; return; }
+
+      const state = p.status || 'offline';
+      const dot = '<span class="dot" style="background:' + (STATUS_COLOR[state] || STATUS_COLOR.offline) + '"></span>';
+      const name = p.username || config.handle || config.name || 'someone';
+
+      // current activity (a song, a game, whatever), lanyard types are strings
+      const act = Array.isArray(p.activities) ? p.activities.find(a => a.type !== 'CUSTOM_STATUS') : null;
+      let activity = '';
+      if (act) {
+        const icon = ACTIVITY_ICON[act.type] || '•';
+        const val = act.state || act.details || act.name || '';
+        activity = '  ' + icon + ' ' + (act.name || '') + (val ? ' — ' + val : '');
+      }
+
+      const stateLabel = p.online ? 'online (' + state + ')' : 'offline';
+      el.innerHTML = dot + ' ' + escapeHtml(name) + ' — ' + stateLabel + (activity ? '<span class="muted">' + escapeHtml(activity) + '</span>' : '');
+    })
+    .catch(() => {
+      el.textContent = 'discord: could not load presence';
+    });
+}
+
+// load the api lanyard exposes so you can link to the actual profile
+function addDiscordLink(config) {
+  if (!config.discordId) return;
+  const linksEl = document.getElementById('links');
+  const li = document.createElement('li');
+  const a = document.createElement('a');
+  a.href = 'https://lanyard.live/profile/' + config.discordId;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  const icon = document.createElement('img');
+  icon.src = 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg';
+  icon.alt = 'discord';
+  const label = document.createElement('span');
+  label.textContent = 'discord';
+  a.appendChild(icon); a.appendChild(label); li.appendChild(a);
+  linksEl.appendChild(li);
+}
 
 // ── window controls ─────────────────────────────────────────
 const term = document.getElementById('term');
@@ -153,6 +219,11 @@ function runButtonCommand(cmd) {
 
   if (cmd === 'community') {
     window.location.href = 'pages/community.html';
+    return;
+  }
+
+  if (cmd === 'discord') {
+    renderPresence(siteConfig);
     return;
   }
 
