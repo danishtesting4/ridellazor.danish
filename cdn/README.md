@@ -8,12 +8,12 @@ This folder doubles as your free image CDN, once this repo is pushed to GitHub.
 2. Commit and push it to GitHub
 3. Your CDN link is:
 
-```
-https://cdn.jsdelivr.net/gh/RidelLazor/ridellazor.danishl@main/cdn/photo.jpg
-```
+ ```
+ https://cdn.jsdelivr.net/gh/RidelLazor/ridellazor.danish@main/cdn/photo.jpg
+ ```
 
-Replace `<REPO-NAME>` with whatever you name this repo (e.g. `RidelLazor.github.io`
-if you're using it as your GitHub Pages root).
+ Swap `RidelLazor` and `ridellazor.danish` for your own username and repo name
+ (e.g. `RidelLazor.github.io` if you're using it as your GitHub Pages root).
 
 ## Why jsDelivr
 

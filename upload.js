@@ -131,9 +131,3 @@ if (person) {
   commitAndPush({ slug: bySlug, name: by, handle: '' }, false, message);
 }
 
-console.log('');
-console.log('next:');
-console.log('  git add pages/community pages/community.json pages/people');
-console.log('  git commit -m "add ' + name.replace(/"/g, '') + ' to community"');
-console.log('  git push');
-

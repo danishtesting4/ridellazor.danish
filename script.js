@@ -100,51 +100,9 @@ Promise.all([
     console.error('Could not load config.json or description.txt', err);
   });
 
-// ── discord presence (Lanyard) ───────────────────────────────
-// config.discordId (your numeric discord id) is the only requirement. the
-// lanyard api sends cors: a * headers, so this works from the browser on
-// github pages without any proxy.
-const LANYARD = 'https://api.lanyard.live/v1/users/';
-const STATUS_COLOR = { online: '#2db544', idle: '#b3ad30', dnd: '#b0413e', offline: '#8a8578' };
-const ACTIVITY_ICON = { LISTENING: '🎧', STREAMING: '📺', PLAYING: '🎮', WATCHING: '📺', COMPETING: '🏆', CUSTOM_STATUS: '🟣' };
-
 function renderPresence(config) {
-  const el = document.getElementById('discordPresence');
-  if (!el || !config || !config.discordId) {
-    if (el) el.textContent = 'no discord id configured';
-    return;
-  }
-
-  el.innerHTML = '<span class="muted">discord: checking…</span>';
-
-  fetch(LANYARD + config.discordId)
-    .then(r => r.ok ? r.json() : null)
-    .then(d => {
-      const p = d && d.data;
-      if (!p) { el.textContent = 'discord: presence unavailable'; return; }
-
-      const state = p.status || 'offline';
-      const dot = '<span class="dot" style="background:' + (STATUS_COLOR[state] || STATUS_COLOR.offline) + '"></span>';
-      const name = p.username || config.handle || config.name || 'someone';
-      const avatar = p.avatar
-        ? '<img src="https://cdn.discordapp.com/avatars/' + config.discordId + '/' + p.avatar + '.' + (String(p.avatar).startsWith('a_') ? 'gif' : 'png') + '?size=32" alt="' + escapeHtml(name) + '" loading="lazy">'
-        : '';
-
-      // current activity (a song, a game, whatever), lanyard types are strings
-      const act = Array.isArray(p.activities) ? p.activities.find(a => a.type !== 'CUSTOM_STATUS') : null;
-      let activity = '';
-      if (act) {
-        const icon = ACTIVITY_ICON[act.type] || '•';
-        const val = act.state || act.details || act.name || '';
-        activity = '  ' + icon + ' ' + (act.name || '') + (val ? ' — ' + val : '');
-      }
-
-      const stateLabel = p.online ? 'online (' + state + ')' : 'offline';
-      el.innerHTML = dot + ' ' + avatar + escapeHtml(name) + ' — ' + stateLabel + (activity ? '<span class="muted">' + escapeHtml(activity) + '</span>' : '');
-    })
-    .catch(() => {
-      el.textContent = 'discord: could not load presence';
-    });
+  // the actual fetch + markup is shared with profile pages in pages/lanyard.js.
+  initLanyard(document.getElementById('discordPresence'), config.discordId, config.handle || config.name);
 }
 
 // load the api lanyard exposes so you can link to the actual profile

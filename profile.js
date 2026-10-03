@@ -461,7 +461,7 @@ function buildProfilePage(person) {
     '<link rel="stylesheet" href="../term.css">\n' +
     '<script id="personData" type="application/json">' + safeJson(person) + '</' + 'script>',
     body,
-    '<script src="../../window.js"></' + 'script>\n<script src="../term.js"></' + 'script>'
+    '<script src="../../lanyard.js"></script>\n<script src="../../window.js"></' + 'script>\n<script src="../term.js"></' + 'script>'
   );
 }
 
