@@ -1,1 +1,7 @@
-[]
+[
+  {
+    "name": "Hello Page",
+    "description": "a hello page with a guard",
+    "url": "community/hello-page.html"
+  }
+]

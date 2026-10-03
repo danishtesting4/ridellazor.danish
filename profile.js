@@ -269,12 +269,28 @@ function gitIdentity() {
   return [];
 }
 
-function commitAndPush(person, created) {
-  // stage only this profile and the two generated files. never `add -A`, so
-  // an edit you are halfway through never gets published by accident.
-  const paths = ['pages/people/' + person.slug, 'pages/people.html', 'pages/people/index.json'];
-  const label = (created ? 'Add ' : 'Update ') + person.name;
-  const message = label + (person.handle ? ' (@' + person.handle + ')' : '');
+function commitAndPush(person, created, message) {
+  // stage all modified tracked files (so dev edits to profile.js / upload.js
+  // never get left behind), plus any new or changed files in the pages area.
+  const paths = [
+    'pages/community',
+    'pages/community.json',
+    'pages/people.html',
+    'pages/people/index.json',
+    'pages/people/' + person.slug
+  ];
+  try {
+    git(['add', '-u']);
+    git(['add', '--'].concat(paths));
+  } catch (err) {
+    console.log('  git     could not stage: ' + gitWhy(err));
+    console.log('          the files are written, so finish it by hand');
+    return;
+  }
+
+  if (message === undefined) {
+    message = (created ? 'Add ' : 'Update ') + person.name + (person.handle ? ' (@' + person.handle + ')' : '');
+  }
 
   try {
     git(['rev-parse', '--is-inside-work-tree']);
@@ -286,7 +302,6 @@ function commitAndPush(person, created) {
   let branch;
   try {
     branch = git(['rev-parse', '--abbrev-ref', 'HEAD']).trim();
-    git(['add', '--'].concat(paths));
 
     // a re-run that changed nothing should not make an empty commit
     if (!git(['diff', '--cached', '--name-only']).trim()) {
@@ -297,10 +312,11 @@ function commitAndPush(person, created) {
     git(gitIdentity().concat(['commit', '-q', '-m', message]));
     const sha = git(['rev-parse', '--short', 'HEAD']).trim();
     git(['push', '-q', 'origin', branch]);
-    console.log('  git     ' + sha + '  pushed to origin/' + branch);
+    console.log('  git     ' + sha + '  ' + message);
   } catch (err) {
     console.log('  git     could not push: ' + gitWhy(err));
     console.log('          the files are written, so finish it by hand:');
+    console.log('            git add -u');
     console.log('            git add ' + paths.join(' '));
     console.log('            git commit -m "' + message.replace(/"/g, '') + '"');
     console.log('            git push origin ' + (branch || 'main'));
@@ -558,6 +574,6 @@ function main() {
   else console.log('  git      skipped (--no-push)');
 }
 
-module.exports = { refresh, findByAuthor, listPeople, readPerson, writeProjects, personDir, writeIndexPage };
+module.exports = { refresh, findByAuthor, listPeople, readPerson, writeProjects, personDir, writeIndexPage, commitAndPush };
 
 if (require.main === module) main();

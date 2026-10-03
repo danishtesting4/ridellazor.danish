@@ -1,0 +1,81 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hello Page</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes shake {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      10% { transform: translate(-12px, -12px) rotate(-3deg); }
+      20% { transform: translate(12px, 8px) rotate(3deg); }
+      30% { transform: translate(-10px, 10px) rotate(-2deg); }
+      40% { transform: translate(10px, -8px) rotate(2deg); }
+      50% { transform: translate(-8px, -10px) rotate(-3deg); }
+      60% { transform: translate(8px, 12px) rotate(1deg); }
+      70% { transform: translate(-12px, 8px) rotate(-2deg); }
+      80% { transform: translate(10px, -10px) rotate(3deg); }
+      90% { transform: translate(-8px, 12px) rotate(-1deg); }
+    }
+
+    .shaking {
+      animation: shake 0.15s infinite;
+    }
+
+    stop, seriously, what, change {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+</head>
+<body class="bg-gray-950 text-white min-h-screen flex items-center justify-center m-0 overflow-hidden font-sans select-none">
+  <div id="container" class="w-full h-full flex items-center justify-center">
+    <stop id="trap-stop">
+      <seriously id="trap-seriously">
+        <what id="trap-what">
+          <change id="trap-change">
+            <h1 id="target-text" msg="you should not be here" class="text-7xl md:text-9xl font-black tracking-widest text-center">hello</h1>
+          </change>
+        </what>
+      </seriously>
+    </stop>
+  </div>
+
+  <script>
+    (function () {
+      let triggered = false;
+      function triggerEmergency() {
+        if (triggered) return;
+        triggered = true;
+        document.body.innerHTML = `<div class="flex items-center justify-center w-full h-full">
+          <h1 class="text-5xl md:text-8xl font-black tracking-widest text-center text-red-100 shaking">
+            YOU WILL NOT MODIFY ANYTHING
+          </h1>
+        </div>`;
+        document.body.style.backgroundColor = "#7f1d1d";
+      }
+      const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          if (mutation.removedNodes.length > 0 || mutation.type === 'characterData' || mutation.type === 'attributes') {
+            triggerEmergency();
+            return;
+          }
+        }
+      });
+      observer.observe(document.body, { attributes: true, childList: true, subtree: true, characterData: true });
+      setInterval(() => {
+        const requiredIds = ["container", "trap-stop", "trap-seriously", "trap-what", "trap-change", "target-text"];
+        for (const id of requiredIds) {
+          if (!document.getElementById(id)) { triggerEmergency(); return; }
+        }
+        const target = document.getElementById("target-text");
+        if (target && target.textContent.trim() !== "hello") { triggerEmergency(); }
+      }, 50);
+    })();
+  </script>
+</body>
+</html>

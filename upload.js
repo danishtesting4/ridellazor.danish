@@ -11,7 +11,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { refresh, findByAuthor, listPeople, writeProjects } = require('./profile.js');
+const { refresh, findByAuthor, listPeople, writeProjects, commitAndPush } = require('./profile.js');
 
 const ROOT = __dirname;
 const SITE_DIR = path.join(ROOT, 'pages', 'community');
@@ -122,8 +122,18 @@ if (ext === '.html' && /(?:src|href)\s*=\s*["']\.{1,2}\//i.test(fs.readFileSync(
   console.log('      use full urls, or drop assets in pages/community/ and point at them.');
 }
 
+// push the result: everything upload just wrote, plus the author's profile
+const bySlug = slugify(by);
+const message = 'Add ' + name + ' to community';
+if (person) {
+  commitAndPush(person, false, message);
+} else {
+  commitAndPush({ slug: bySlug, name: by, handle: '' }, false, message);
+}
+
 console.log('');
 console.log('next:');
 console.log('  git add pages/community pages/community.json pages/people');
 console.log('  git commit -m "add ' + name.replace(/"/g, '') + ' to community"');
 console.log('  git push');
+
