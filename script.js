@@ -23,6 +23,30 @@ function render(config) {
   if (descEl) descEl.textContent = config.description || '';
   if (pfpEl && config.pfp) pfpEl.src = config.pfp;
   document.title = (config.name || 'whoami') + ' — ridellazor.danish';
+
+  const linksEl = document.getElementById('links');
+  if (linksEl) {
+    linksEl.innerHTML = '';
+    (config.links || []).forEach(link => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = link.url;
+      a.target = (link.url || '').startsWith('mailto:') ? '_self' : '_blank';
+      a.rel = 'noopener noreferrer';
+      if (link.icon) {
+        const icon = document.createElement('img');
+        icon.src = link.icon;
+        icon.alt = '';
+        icon.loading = 'lazy';
+        a.appendChild(icon);
+      }
+      const label = document.createElement('span');
+      label.textContent = link.label;
+      a.appendChild(label);
+      li.appendChild(a);
+      linksEl.appendChild(li);
+    });
+  }
 }
 
 function renderDesktopIcons() { /* no-op: terminal desktop removed */ }
