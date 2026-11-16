@@ -275,10 +275,10 @@ function commitAndPush(person, created, message) {
   // stage all modified tracked files (so dev edits to profile.js / upload.js
   // never get left behind), plus any new or changed files in the pages area.
   const paths = [
-    'pages/community',
-    'pages/community.json',
+    'public/pages/community',
+    'public/pages/community.json',
     'pages/people.html',
-    'pages/people/index.json',
+    'public/pages/people/index.json',
     'pages/people/' + person.slug
   ];
   try {
@@ -461,7 +461,7 @@ function buildProfilePage(person) {
     '<link rel="stylesheet" href="../term.css">\n' +
     '<script id="personData" type="application/json">' + safeJson(person) + '</' + 'script>',
     body,
-    '<script src="../../lanyard.js"></script>\n<script src="../../window.js"></' + 'script>\n<script src="../term.js"></' + 'script>'
+    '<script type="module" src="../../lanyard.js"></script>\n<script type="module" src="../../window.js"></' + 'script>\n<script type="module" src="../term.js"></' + 'script>'
   );
 }
 
@@ -502,8 +502,10 @@ function buildIndex(people) {
 // directory, so publish just enough to map an author name to a profile folder.
 // generated alongside people.html — the folders stay the source of truth.
 function writeIndexJson(people) {
+  const outDir = path.join(ROOT, 'public', 'pages', 'people');
+  fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(
-    path.join(PEOPLE_DIR, 'index.json'),
+    path.join(outDir, 'index.json'),
     JSON.stringify(people.map(p => ({ slug: p.slug, name: p.name, handle: p.handle })), null, 2) + '\n'
   );
 }

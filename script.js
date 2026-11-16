@@ -102,7 +102,7 @@ Promise.all([
 
 function renderPresence(config) {
   // the actual fetch + markup is shared with profile pages in pages/lanyard.js.
-  initLanyard(document.getElementById('discordPresence'), config.discordId, config.handle || config.name);
+  window.initLanyard(document.getElementById('discordPresence'), config.discordId, config.handle || config.name);
 }
 
 // load the api lanyard exposes so you can link to the actual profile

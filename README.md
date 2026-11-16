@@ -32,6 +32,23 @@ person's profile (and on the home page), fetched from Lanyard.
 `profile.js` and `upload.js` both commit and push as they run, so a codespace
 needs no extra steps. Use `--no-push` to stage a few changes into one commit.
 
+## Build and deploy
+
+The site is built with Vite as a multi-page app and deployed to GitHub Pages by
+`.github/workflows/deploy.yml` on every push to `main`.
+
+```
+npm install       # once
+npm run dev       # local dev server with HMR
+npm run build     # production build into dist/
+npm run preview   # preview the built dist/
+```
+
+The workflow runs `npm ci && npm run build` and publishes `dist/`. To switch
+the live site over to it, set the repo's Pages source to "GitHub Actions"
+(Settings → Pages → Build and deployment → Source). Until then Pages keeps
+serving the committed files, so nothing breaks during the transition.
+
 ```
 node profile.js "<Name>" ["<bio>"] [--handle <h>] [--pfp <path>]
                     [--links "<Label|url,...>"] [--bio-link "<Label|url>"]

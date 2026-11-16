@@ -21,7 +21,7 @@
   // discord presence is shared with the home page via ../../lanyard.js; it
   // exposes initLanyard(el, discordId, fallbackName).
   function renderPresence() {
-    initLanyard(document.getElementById('discordPresence'), person.discordId, person.handle);
+    window.initLanyard(document.getElementById('discordPresence'), person.discordId, person.handle);
   }
 
   // load once, then refresh periodically — presence changes are infrequent

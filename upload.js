@@ -14,8 +14,8 @@ const path = require('path');
 const { refresh, findByAuthor, listPeople, writeProjects, commitAndPush } = require('./profile.js');
 
 const ROOT = __dirname;
-const SITE_DIR = path.join(ROOT, 'pages', 'community');
-const LIST = path.join(ROOT, 'pages', 'community.json');
+const SITE_DIR = path.join(ROOT, 'public', 'pages', 'community');
+const LIST = path.join(ROOT, 'public', 'pages', 'community.json');
 
 const [name, description, file, by] = process.argv.slice(2).map(arg => (arg || '').trim());
 
@@ -59,7 +59,7 @@ const ext = path.extname(source) || '.html';
 const dest = path.join(SITE_DIR, slug + ext);
 
 if (fs.existsSync(dest)) {
-  die('pages/community/' + slug + ext + ' already exists — change the name or delete that file first');
+  die('public/pages/community/' + slug + ext + ' already exists — change the name or delete that file first');
 }
 
 // read the list before touching anything, so a broken file never gets clobbered
