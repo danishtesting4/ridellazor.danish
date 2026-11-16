@@ -217,3 +217,25 @@ document.getElementById('termButtons').addEventListener('click', e => {
   if (!btn) return;
   runButtonCommand(btn.dataset.cmd);
 });
+
+// ── topbar indicator ─────────────────────────────────────────
+(function () {
+  const bar = document.getElementById('topbar');
+  const ind = document.getElementById('topbarIndicator');
+  if (!bar || !ind) return;
+  const tabs = Array.from(bar.querySelectorAll('.topbar-tab'));
+  function move(el) {
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const br = bar.getBoundingClientRect();
+    ind.style.left = (r.left - br.left) + 'px';
+    ind.style.width = r.width + 'px';
+  }
+  const active = bar.querySelector('.topbar-tab.active') || tabs[0];
+  requestAnimationFrame(() => move(active));
+  tabs.forEach(t => {
+    t.addEventListener('mouseenter', () => move(t));
+    t.addEventListener('mouseleave', () => move(bar.querySelector('.topbar-tab.active') || tabs[0]));
+  });
+  window.addEventListener('resize', () => move(bar.querySelector('.topbar-tab.active') || tabs[0]));
+})();

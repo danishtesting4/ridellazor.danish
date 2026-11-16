@@ -456,7 +456,9 @@ function buildProfilePage(person) {
     '<link rel="icon" href="../../../pfp/avatar.jpg">\n' +
     '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
     '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
-    '<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">\n' +
+    '<link rel="preconnect" href="https://api.fontshare.com" crossorigin>\n' +
+'<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">\n' +
+'<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">\n' +
     '<link rel="stylesheet" href="../../../style.css">\n' +
     '<link rel="stylesheet" href="../term.css">\n' +
     '<script id="personData" type="application/json">' + safeJson(person) + '</' + 'script>',
@@ -493,6 +495,9 @@ function buildIndex(people) {
   return page(
     '<title>People — ' + SITE + '</title>\n' +
     '<link rel="icon" href="../pfp/avatar.jpg">\n' +
+    '<link rel="preconnect" href="https://api.fontshare.com" crossorigin>\n' +
+    '<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">\n' +
+    '<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">\n' +
     '<link rel="stylesheet" href="site.css">',
     body
   );
