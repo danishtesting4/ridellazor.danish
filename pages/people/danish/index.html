@@ -3,75 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>whoami</title>
+<title>RidelLazor — ridellazor.danish</title>
 <link rel="icon" href="../../../pfp/avatar.jpg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../../../style.css">
-<link rel="stylesheet" href="../term.css">
+<link rel="stylesheet" href="../../site.css">
 <script id="personData" type="application/json">{"slug":"danish","name":"RidelL","handle":"RidelLazor","bio":"hi, im danish/ridellazor.more things will come here :\u003e","links":[{"label":"GitHub","url":"https://github.com/RidelLazor"},{"label":"YouTube","url":"https://youtube.com/@ridellazor"},{"label":"Mail","url":"mailto:ridellazorreply@gmail.com"}],"bioLink":null,"discordId":"1384132553761493082","avatar":"pfp/avatar.jpg","projects":[{"name":"Hello Page","description":"a hello page with a guard","url":"community/hello-page.html"}]}</script></head>
 <body>
 
-<main class="term" id="term">
-  <div class="term-bar">
-    <span class="term-title">RidelLazor@site: ~</span>
-    <div class="win-controls">
-      <span class="win-btn" id="btnMin" title="Minimize">–</span>
-      <span class="win-btn" id="btnMax" title="Maximize">▢</span>
-      <span class="win-btn win-close" id="btnClose" title="Close">×</span>
-    </div>
-  </div>
-  <div class="term-body" id="termBody">
-    <div class="line prompt-line"><span class="prompt">$</span> whoami</div>
-    <div class="identity">
-      <img class="pfp" src="pfp/avatar.jpg" alt="RidelL profile picture">
-      <div class="identity-text">
-        <h1 class="identity-name">RidelL</h1>
-        <p class="identity-handle">@RidelLazor</p>
-        <p class="identity-bio">hi, im danish/ridellazor.more things will come here :&gt;</p>
+<nav class="topbar">
+  <a class="topbar-tab" href="../../../">Home</a>
+  <a class="topbar-tab active" href="../../people.html">People</a>
+  <a class="topbar-tab" href="../../community.html">Projects</a>
+  <a class="topbar-tab" href="https://github.com/RidelLazor" target="_blank" rel="noopener">GitHub</a>
+</nav>
+<main class="page-content">
+  <div class="container">
+    <section class="hero">
+      <img class="hero-pfp" src="pfp/avatar.jpg" alt="RidelL profile picture">
+      <div class="hero-text">
+        <p class="hero-eyebrow">RidelLazor</p>
+        <h1 class="hero-name">RidelL</h1>
+        <p class="hero-handle">@RidelLazor</p>
+        <p class="hero-bio">hi, im danish/ridellazor.more things will come here :&gt;</p>
+        <div class="hero-presence" id="discordPresence">checking…</div>
       </div>
-    </div>
-    <div class="line prompt-line"><span class="prompt">$</span> ls links/</div>
-    <ul class="ls">
-    <li><a href="https://github.com/RidelLazor" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-    <li><a href="https://youtube.com/@ridellazor" target="_blank" rel="noopener noreferrer">YouTube</a></li>
-    <li><a href="mailto:ridellazorreply@gmail.com">Mail</a></li>
-    </ul>
-    <div class="line prompt-line"><span class="prompt">$</span> ls projects/</div>
-    <ul class="ls">
-      <li><a href="../../community/hello-page.html">Hello Page</a></li>
-    </ul>
-    <p class="ls-note">Hello Page — a hello page with a guard</p>
-    <div class="line prompt-line"><span class="prompt">$</span> check discord</div>
-    <div class="line"><span class="out" id="discordPresence">checking…</span></div>
-    <div class="line prompt-line"><span class="prompt">$</span> cd ..</div>
-    <div class="line"><a class="nav-link" href="../../people.html">people/</a></div>
-    <div class="line"><a class="nav-link" href="../../community.html">community/</a></div>
-    <div class="line"><a class="nav-link" href="../../../">home/</a></div>
-    <div class="term-buttons" id="termButtons">
-      <button class="term-btn" data-cmd="whoami">whoami</button>
-      <button class="term-btn" data-cmd="about">about</button>
-      <button class="term-btn" data-cmd="projects">projects</button>
-      <button class="term-btn" data-cmd="links">links</button>
-      <button class="term-btn" data-cmd="date">date</button>
-      <button class="term-btn" data-cmd="discord">discord</button>
-      <button class="term-btn" data-cmd="clear">clear</button>
-    </div>
-    <div class="term-history" id="termHistory"></div>
+    </section>
+    <section class="block"><h2 class="block-title">Links</h2><ul class="link-list">    <li><a href="https://github.com/RidelLazor" target="_blank" rel="noopener noreferrer">GitHub</a></li>    <li><a href="https://youtube.com/@ridellazor" target="_blank" rel="noopener noreferrer">YouTube</a></li>    <li><a href="mailto:ridellazorreply@gmail.com">Mail</a></li></ul></section>
+    <section class="block"><h2 class="block-title">Projects</h2><ul class="link-list">      <li><a href="../../community/hello-page.html">Hello Page</a></li></ul>    <p class="ls-note">Hello Page — a hello page with a guard</p>
+    <section class="block">
+      <h2 class="block-title">Navigate</h2>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <a class="btn" href="../../people.html">people/</a>
+        <a class="btn" href="../../community.html">community/</a>
+        <a class="btn" href="../../../">home/</a>
+      </div>
+    </section>
   </div>
 </main>
-<div class="desktop" id="desktop">
-  <div class="desktop-icons" id="desktopIcons"></div>
-  <button class="taskbar-item" id="restoreBtn">
-    <span class="taskbar-dot"></span> RidelLazor@site: ~
-  </button>
-</div>
+<footer class="footer">
+  <div class="container footer-inner">
+    <span>RidelL (@RidelLazor)</span>
+    <span class="footer-mono">ridellazor.dpdns.org</span>
+  </div>
+</footer>
 
 <script type="module" src="../../lanyard.js"></script>
-<script type="module" src="../../window.js"></script>
-<script type="module" src="../term.js"></script>
 </body>
 </html>

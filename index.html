@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>whoami</title>
+<title>RidelL — ridellazor.danish</title>
 <link rel="icon" href="pfp/avatar.jpg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
@@ -22,58 +21,46 @@
   <a class="topbar-tab" href="https://github.com/RidelLazor" target="_blank" rel="noopener">GitHub</a>
 </nav>
 
-<main class="term" id="term">
-  <div class="term-bar">
-    <span class="term-title">guest@site: ~</span>
-    <div class="win-controls">
-      <span class="win-btn" id="btnMin" title="Minimize">–</span>
-      <span class="win-btn" id="btnMax" title="Maximize">▢</span>
-      <span class="win-btn win-close" id="btnClose" title="Close">×</span>
-    </div>
-  </div>
+<main class="page-content">
+  <div class="container">
 
-  <div class="term-body" id="termBody">
-    <div class="line prompt-line"><span class="prompt">$</span> whoami</div>
-
-    <div class="identity" id="identity">
-      <img class="pfp" id="pfp" src="" alt="profile picture">
-      <div class="identity-text">
-        <h1 class="identity-name" id="name">—</h1>
-        <p class="identity-handle" id="handle"></p>
-        <p class="identity-bio" id="desc"></p>
+    <section class="hero">
+      <img class="hero-pfp" id="pfp" src="" alt="profile picture">
+      <div class="hero-text">
+        <p class="hero-eyebrow">ridellazor.dpdns.org</p>
+        <h1 class="hero-name" id="name">—</h1>
+        <p class="hero-handle" id="handle"></p>
+        <p class="hero-bio" id="desc"></p>
+        <div class="hero-presence" id="discordPresence">checking…</div>
       </div>
-    </div>
+    </section>
 
-    <div class="line prompt-line"><span class="prompt">$</span> ls ~/</div>
-    <div class="line"><a class="nav-link" href="pages/">pages/</a></div>
-    <div class="line"><a class="nav-link" href="pages/community.html">community/</a></div>
+    <section class="block">
+      <h2 class="block-title">Links</h2>
+      <ul class="link-list" id="links"></ul>
+    </section>
 
-    <div class="line prompt-line"><span class="prompt">$</span> ls links/</div>
-    <ul class="ls" id="links"></ul>
+    <section class="block">
+      <h2 class="block-title">Projects</h2>
+      <p class="block-sub">Things people have sent in.</p>
+      <a class="btn" href="pages/community.html">Browse all projects →</a>
+    </section>
 
-    <div class="line prompt-line"><span class="prompt">$</span> check discord</div>
-    <div class="line"><span class="out" id="discordPresence">checking…</span></div>
+    <section class="block">
+      <h2 class="block-title">People</h2>
+      <p class="block-sub">Everyone who has sent something in.</p>
+      <a class="btn" href="pages/">See all people →</a>
+    </section>
 
-    <div class="term-buttons" id="termButtons">
-      <button class="term-btn" data-cmd="whoami">whoami</button>
-      <button class="term-btn" data-cmd="about">about</button>
-      <button class="term-btn" data-cmd="projects">projects</button>
-      <button class="term-btn" data-cmd="community">community</button>
-      <button class="term-btn" data-cmd="discord">discord</button>
-      <button class="term-btn" data-cmd="date">date</button>
-      <button class="term-btn" data-cmd="clear">clear</button>
-    </div>
-
-    <div class="term-history" id="termHistory"></div>
   </div>
 </main>
 
-<div class="desktop" id="desktop">
-  <div class="desktop-icons" id="desktopIcons"></div>
-  <button class="taskbar-item" id="restoreBtn">
-    <span class="taskbar-dot"></span> guest@site: ~
-  </button>
-</div>
+<footer class="footer">
+  <div class="container footer-inner">
+    <span>© RidelLazor</span>
+    <span class="footer-mono">ridellazor.dpdns.org</span>
+  </div>
+</footer>
 
 <script type="module" src="pages/lanyard.js"></script>
 <script type="module" src="script.js"></script>

@@ -366,104 +366,76 @@ function linkRow(link, note, extraClass) {
 }
 
 function buildProfilePage(person) {
-  // lives at pages/people/<slug>/index.html and uses the site's terminal theme,
-  // same as the home page. the person is baked in, so there is no fetch.
   const handle = person.handle || person.slug;
   const links = person.links || [];
   const projects = person.projects || [];
 
   const body = [
-    '<main class="term" id="term">',
-    '  <div class="term-bar">',
-    '    <span class="term-title">' + esc(handle) + '@site: ~</span>',
-    '    <div class="win-controls">',
-    '      <span class="win-btn" id="btnMin" title="Minimize">\u2013</span>',
-    '      <span class="win-btn" id="btnMax" title="Maximize">\u25A2</span>',
-    '      <span class="win-btn win-close" id="btnClose" title="Close">\u00D7</span>',
-    '    </div>',
-    '  </div>',
+    '<nav class="topbar">',
+    '  <a class="topbar-tab" href="../../../">Home</a>',
+    '  <a class="topbar-tab active" href="../../people.html">People</a>',
+    '  <a class="topbar-tab" href="../../community.html">Projects</a>',
+    '  <a class="topbar-tab" href="https://github.com/RidelLazor" target="_blank" rel="noopener">GitHub</a>',
+    '</nav>',
     '',
-    '  <div class="term-body" id="termBody">',
-    '    <div class="line prompt-line"><span class="prompt">$</span> whoami</div>',
+    '<main class="page-content">',
+    '  <div class="container">',
     '',
-    '    <div class="identity">',
-    // their picture sits in their own folder, next to this page
+    '    <section class="hero">',
     person.avatar
-      ? '      <img class="pfp" src="' + esc(person.avatar) + '" alt="' + esc(person.name) + ' profile picture">'
-      : '      <img class="pfp" src="../../../pfp/avatar.jpg" alt="">',
-    '      <div class="identity-text">',
-    '        <h1 class="identity-name">' + esc(person.name) + '</h1>',
-    person.handle ? '        <p class="identity-handle">@' + esc(person.handle) + '</p>' : '',
-    person.bio ? '        <p class="identity-bio">' + esc(person.bio) + '</p>' : '',
+      ? '      <img class="hero-pfp" src="' + esc(person.avatar) + '" alt="' + esc(person.name) + ' profile picture">'
+      : '      <img class="hero-pfp" src="../../../pfp/avatar.jpg" alt="">',
+    '      <div class="hero-text">',
+    '        <p class="hero-eyebrow">' + esc(handle) + '</p>',
+    '        <h1 class="hero-name">' + esc(person.name) + '</h1>',
+    person.handle ? '        <p class="hero-handle">@' + esc(person.handle) + '</p>' : '',
+    person.bio ? '        <p class="hero-bio">' + esc(person.bio) + '</p>' : '',
+    '        <div class="hero-presence" id="discordPresence">checking\u2026</div>',
     '      </div>',
-    '    </div>',
+    '    </section>',
     '',
-    '    <div class="line prompt-line"><span class="prompt">$</span> ls links/</div>',
     links.length
-      ? '    <ul class="ls">\n' + links.map(l => linkRow(l)).join('\n') + '\n    </ul>'
-      : '    <p class="empty">nothing here yet</p>',
-    '',
-    // their page elsewhere, kept below our own links so this page still reads
-    // as the real one
+      ? '    <section class="block"><h2 class="block-title">Links</h2><ul class="link-list">' + links.map(l => linkRow(l)).join('') + '</ul></section>'
+      : '    <section class="block"><h2 class="block-title">Links</h2><p class="empty">nothing here yet</p></section>',
     person.bioLink
-      ? '    <div class="line prompt-line"><span class="prompt">$</span> cat bio-page.txt</div>\n' +
-        '    <ul class="ls">\n' + linkRow(person.bioLink, 'their link in bio', 'leaving') + '\n    </ul>\n'
+      ? '    <section class="block"><h2 class="block-title">Elsewhere</h2><ul class="link-list">' + linkRow(person.bioLink, 'their link in bio', 'leaving') + '</ul></section>'
       : '',
-    '',
-    '    <div class="line prompt-line"><span class="prompt">$</span> ls projects/</div>',
     projects.length
-      ? '    <ul class="ls">\n' + projects.map(p =>
-          '      <li><a href="' + esc(rebase(p.url, '../../')) + '"' +
-          (isExternal(p.url) ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' +
-          esc(p.name) + '</a></li>'
-        ).join('\n') + '\n    </ul>\n' +
-        projects.filter(p => p.description).map(p => '    <p class="ls-note">' + esc(p.name) + ' \u2014 ' + esc(p.description) + '</p>').join('\n')
-       : '    <p class="empty">no projects yet</p>',
+      ? '    <section class="block"><h2 class="block-title">Projects</h2><ul class="link-list">' +
+        projects.map(p => '      <li><a href="' + esc(rebase(p.url, '../../')) + '"' + (isExternal(p.url) ? ' target="_blank" rel="noopener noreferrer"' : '') + '>' + esc(p.name) + '</a></li>').join('') +
+        '</ul>' + projects.filter(p => p.description).map(p => '    <p class="ls-note">' + esc(p.name) + ' \u2014 ' + esc(p.description) + '</p>').join('')
+      : '    <section class="block"><h2 class="block-title">Projects</h2><p class="empty">no projects yet</p></section>',
     '',
-    '    <div class="line prompt-line"><span class="prompt">$</span> check discord</div>',
-    '    <div class="line"><span class="out" id="discordPresence">checking…</span></div>',
-
+    '    <section class="block">',
+    '      <h2 class="block-title">Navigate</h2>',
+    '      <div style="display:flex;gap:8px;flex-wrap:wrap;">',
+    '        <a class="btn" href="../../people.html">people/</a>',
+    '        <a class="btn" href="../../community.html">community/</a>',
+    '        <a class="btn" href="../../../">home/</a>',
+    '      </div>',
+    '    </section>',
     '',
-    '    <div class="line prompt-line"><span class="prompt">$</span> cd ..</div>',
-    '    <div class="line"><a class="nav-link" href="../../people.html">people/</a></div>',
-    '    <div class="line"><a class="nav-link" href="../../community.html">community/</a></div>',
-    '    <div class="line"><a class="nav-link" href="../../../">home/</a></div>',
-    '',
-    '    <div class="term-buttons" id="termButtons">',
-    '      <button class="term-btn" data-cmd="whoami">whoami</button>',
-    '      <button class="term-btn" data-cmd="about">about</button>',
-    '      <button class="term-btn" data-cmd="projects">projects</button>',
-    '      <button class="term-btn" data-cmd="links">links</button>',
-    '      <button class="term-btn" data-cmd="date">date</button>',
-    '      <button class="term-btn" data-cmd="discord">discord</button>',
-    '      <button class="term-btn" data-cmd="clear">clear</button>',
-    '    </div>',
-    '',
-    '    <div class="term-history" id="termHistory"></div>',
     '  </div>',
     '</main>',
     '',
-    '<div class="desktop" id="desktop">',
-    '  <div class="desktop-icons" id="desktopIcons"></div>',
-    '  <button class="taskbar-item" id="restoreBtn">',
-    '    <span class="taskbar-dot"></span> ' + esc(handle) + '@site: ~',
-    '  </button>',
-    '</div>'
+    '<footer class="footer">',
+    '  <div class="container footer-inner">',
+    '    <span>' + esc(person.name) + (person.handle ? ' (@' + esc(person.handle) + ')' : '') + '</span>',
+    '    <span class="footer-mono">ridellazor.dpdns.org</span>',
+    '  </div>',
+    '</footer>'
   ].filter(line => line !== undefined && line !== '').join('\n');
 
   return page(
-    '<title>whoami</title>\n' +
+    '<title>' + esc(handle) + ' \u2014 ridellazor.danish</title>\n' +
     '<link rel="icon" href="../../../pfp/avatar.jpg">\n' +
-    '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
-    '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
     '<link rel="preconnect" href="https://api.fontshare.com" crossorigin>\n' +
-'<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">\n' +
-'<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">\n' +
-    '<link rel="stylesheet" href="../../../style.css">\n' +
-    '<link rel="stylesheet" href="../term.css">\n' +
+    '<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">\n' +
+    '<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">\n' +
+    '<link rel="stylesheet" href="../../site.css">\n' +
     '<script id="personData" type="application/json">' + safeJson(person) + '</' + 'script>',
     body,
-    '<script type="module" src="../../lanyard.js"></script>\n<script type="module" src="../../window.js"></' + 'script>\n<script type="module" src="../term.js"></' + 'script>'
+    '<script type="module" src="../../lanyard.js"></script>'
   );
 }
 

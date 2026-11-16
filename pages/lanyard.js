@@ -5,8 +5,8 @@
 // https://api.lanyard.live, whose responses carry Access-Control-Allow-Origin: *,
 // so this works from the browser on GitHub Pages with no proxy.
 //
-// Loaded by both the home page (script.js) and profile pages (term.js), which
-// previously each carried a copy of this logic.
+// Loaded by both the home page (script.js) and profile pages, which previously
+// each carried a copy of this logic.
 
 (function (global) {
   'use strict';
