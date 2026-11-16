@@ -369,6 +369,7 @@ function buildProfilePage(person) {
   const handle = person.handle || person.slug;
   const links = person.links || [];
   const projects = person.projects || [];
+  const profileLinks = links.concat(person.discordId ? [{ label: 'Discord', url: 'https://discord.com/users/' + person.discordId, icon: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg' }] : []);
 
   const body = [
     '<nav class="topbar">',
@@ -390,12 +391,11 @@ function buildProfilePage(person) {
     '        <h1 class="hero-name">' + esc(person.name) + '</h1>',
     person.handle ? '        <p class="hero-handle">@' + esc(person.handle) + '</p>' : '',
     person.bio ? '        <p class="hero-bio">' + esc(person.bio) + '</p>' : '',
-    '        <div class="hero-presence" id="discordPresence">checking\u2026</div>',
     '      </div>',
     '    </section>',
     '',
-    links.length
-      ? '    <section class="block"><h2 class="block-title">Links</h2><ul class="link-list">' + links.map(l => linkRow(l)).join('') + '</ul></section>'
+    profileLinks.length
+      ? '    <section class="block"><h2 class="block-title">Links</h2><ul class="link-list">' + profileLinks.map(l => linkRow(l)).join('') + '</ul></section>'
       : '    <section class="block"><h2 class="block-title">Links</h2><p class="empty">nothing here yet</p></section>',
     person.bioLink
       ? '    <section class="block"><h2 class="block-title">Elsewhere</h2><ul class="link-list">' + linkRow(person.bioLink, 'their link in bio', 'leaving') + '</ul></section>'
@@ -435,7 +435,7 @@ function buildProfilePage(person) {
     '<link rel="stylesheet" href="../../site.css">\n' +
     '<script id="personData" type="application/json">' + safeJson(person) + '</' + 'script>',
     body,
-    '<script type="module" src="../../lanyard.js"></script>'
+    ''
   );
 }
 

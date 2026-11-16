@@ -33,7 +33,7 @@ function addDiscordLink(config) {
   if (!linksEl) return;
   const li = document.createElement('li');
   const a = document.createElement('a');
-  a.href = 'https://lanyard.live/profile/' + config.discordId;
+  a.href = 'https://discord.com/users/' + config.discordId;
   a.target = '_blank';
   a.rel = 'noopener noreferrer';
   const icon = document.createElement('img');
@@ -45,10 +45,6 @@ function addDiscordLink(config) {
   linksEl.appendChild(li);
 }
 
-function renderPresence(config) {
-  window.initLanyard(document.getElementById('discordPresence'), config.discordId, config.handle || config.name);
-}
-
 Promise.all([
   fetch('config.json').then(res => res.json()),
   fetch('description.txt').then(res => res.text())
@@ -58,8 +54,6 @@ Promise.all([
     siteConfig = config;
     render(config);
     addDiscordLink(config);
-    renderPresence(config);
-    setInterval(() => renderPresence(config), 1000 * 60 * 2);
   })
   .catch(err => {
     console.error('Could not load config.json or description.txt', err);
