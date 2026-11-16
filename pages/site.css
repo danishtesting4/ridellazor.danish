@@ -1,174 +1,110 @@
-/* community — white page, black navbar, one font */
+/* shared editorial theme for the people + community pages */
 
 :root {
-  --white: #ffffff;
-  --black: #000000;
-  --gray: #555555;
-  --line: #cccccc;
-  --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --width: 880px;
+  --bg: #f5f2ec;
+  --bg-soft: #ece8df;
+  --surface: #ffffff;
+  --text: #1a1816;
+  --muted: #6e6a62;
+  --accent: #2a3a5f;
+  --border: #e2ded4;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 2px rgba(26,24,22,0.04), 0 8px 24px rgba(26,24,22,0.06);
+  --font-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  --maxw: 760px;
 }
 
 * { box-sizing: border-box; }
 
-body {
-  margin: 0;
-  background: var(--white);
-  color: var(--black);
-  font-family: var(--font);
-  font-size: 16px;
-  line-height: 1.5;
+html, body {
+  margin: 0; padding: 0;
+  background: var(--bg); color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 16px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
 }
 
-a { color: var(--black); }
-
-/* ── navbar ───────────────────────────────────────────────── */
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
 .nav {
-  background: var(--black);
+  padding: 28px 0 12px;
 }
-
 .nav-inner {
-  max-width: var(--width);
+  max-width: var(--maxw);
   margin: 0 auto;
-  padding: 0 20px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  padding: 0 28px;
+  display: flex; align-items: baseline; justify-content: space-between; gap: 24px;
 }
-
-.nav-brand,
-.nav-links a {
-  color: var(--white);
-  font-size: 15px;
-  text-decoration: none;
+.nav-brand {
+  font-family: var(--font-serif);
+  font-size: 22px; font-weight: 600; letter-spacing: -0.01em;
+  color: var(--text); text-decoration: none;
 }
-
-.nav-brand { font-weight: 600; }
-
-.nav-links {
-  display: flex;
-  gap: 20px;
-}
-
-.nav-links a:hover,
-.nav-brand:hover { text-decoration: underline; }
-
-/* ── page ─────────────────────────────────────────────────── */
+.nav-brand:hover { color: var(--accent); }
+.nav-links { display: flex; gap: 22px; }
+.nav-links a { font-size: 14px; color: var(--muted); text-decoration: none; }
+.nav-links a:hover { color: var(--text); }
 
 .main {
-  max-width: var(--width);
-  margin: 0 auto;
-  padding: 44px 20px 64px;
-}
-
-h1 {
-  margin: 0;
-  font-size: 32px;
-  line-height: 1.2;
-  font-weight: 700;
-}
-
-.sub {
-  margin: 8px 0 0;
-  color: var(--gray);
-  font-size: 16px;
-}
-
-.count {
-  margin: 30px 0 0;
-  color: var(--gray);
-  font-size: 14px;
-}
-
-/* ── list ─────────────────────────────────────────────────── */
-
-.item {
-  display: flex;
-  align-items: baseline;
-  gap: 20px;
-  padding: 18px 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.item:first-child { border-top: 1px solid var(--line); }
-
-.item-name {
-  font-size: 17px;
-  font-weight: 600;
-  flex-shrink: 0;
-  text-decoration: none;
-}
-
-.item-by {
-  font-size: 15px;
-  color: var(--gray);
-  flex-shrink: 0;
-  text-decoration: none;
-}
-
-.item-desc {
-  color: var(--gray);
-  font-size: 15px;
+  max-width: var(--maxw);
+  margin: 24px auto 60px;
+  padding: 0 28px;
   flex: 1;
 }
-
-.item-name:hover,
-.item-by:hover { text-decoration: underline; }
-
-.item:focus-visible,
-.item-name:focus-visible,
-.item-by:focus-visible {
-  outline: 2px solid var(--black);
-  outline-offset: 3px;
+h1 {
+  font-family: var(--font-serif);
+  font-size: 40px; font-weight: 600;
+  letter-spacing: -0.02em; line-height: 1.1;
+  margin: 8px 0 6px;
 }
+.sub { color: var(--muted); font-size: 16px; margin: 0 0 28px; }
+.count { font-size: 13px; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 20px; }
 
-/* ── empty / error ────────────────────────────────────────── */
-
-.note {
-  margin: 0;
-  padding: 22px 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  color: var(--gray);
-  font-size: 15px;
+.item {
+  padding: 18px 0;
+  border-top: 1px solid var(--border);
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px;
 }
-
-/* ── send ─────────────────────────────────────────────────── */
-
-.send {
-  margin-top: 56px;
-  padding-top: 28px;
-  border-top: 1px solid var(--line);
+.item:last-child { border-bottom: 1px solid var(--border); }
+.item-name {
+  font-family: var(--font-serif);
+  font-size: 20px; font-weight: 600;
+  color: var(--text); text-decoration: none;
 }
+.item-name:hover { color: var(--accent); }
+.item-by { font-size: 13px; color: var(--muted); }
+.item-desc { font-size: 13px; color: var(--muted); margin-left: auto; }
 
-.send h2 {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 700;
+.note { color: var(--muted); font-style: italic; font-size: 14px; }
+
+/* community cards */
+.community-list { display: flex; flex-direction: column; gap: 14px; margin-top: 8px; }
+.community-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-
-.send p {
-  margin: 8px 0 0;
-  color: var(--gray);
-  font-size: 15px;
+.community-card:hover { border-color: var(--accent); box-shadow: var(--shadow); }
+.community-card h3 {
+  font-family: var(--font-serif);
+  font-size: 20px; font-weight: 600;
+  margin: 0 0 4px; letter-spacing: -0.01em;
 }
-
-.mail {
-  display: inline-block;
-  margin-top: 12px;
-  font-size: 16px;
+.community-card .by { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
+.community-card p { margin: 0 0 12px; font-size: 14px; color: var(--text); }
+.community-card a.open {
+  font-size: 13px; font-weight: 500; color: var(--accent);
+  text-decoration: none;
 }
-
-a:hover { text-decoration: underline; }
+.community-card a.open:hover { text-decoration: underline; }
 
 @media (max-width: 600px) {
-  .item {
-    display: block;
-  }
-  .item-by,
-  .item-desc { display: block; margin-top: 4px; }
-  h1 { font-size: 26px; }
+  .nav-inner, .main { padding: 0 20px; }
+  h1 { font-size: 32px; }
 }

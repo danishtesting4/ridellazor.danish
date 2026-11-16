@@ -392,9 +392,9 @@ function buildProfilePage(person) {
       ? '      <img class="pfp" src="' + esc(person.avatar) + '" alt="' + esc(person.name) + ' profile picture">'
       : '      <img class="pfp" src="../../../pfp/avatar.jpg" alt="">',
     '      <div class="identity-text">',
-    '        <h1>' + esc(person.name) + '</h1>',
-    person.handle ? '        <p class="handle">@' + esc(person.handle) + '</p>' : '',
-    person.bio ? '        <p class="desc">' + esc(person.bio) + '</p>' : '',
+    '        <h1 class="identity-name">' + esc(person.name) + '</h1>',
+    person.handle ? '        <p class="identity-handle">@' + esc(person.handle) + '</p>' : '',
+    person.bio ? '        <p class="identity-bio">' + esc(person.bio) + '</p>' : '',
     '      </div>',
     '    </div>',
     '',
@@ -456,7 +456,7 @@ function buildProfilePage(person) {
     '<link rel="icon" href="../../../pfp/avatar.jpg">\n' +
     '<link rel="preconnect" href="https://fonts.googleapis.com">\n' +
     '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n' +
-    '<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">\n' +
+    '<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">\n' +
     '<link rel="stylesheet" href="../../../style.css">\n' +
     '<link rel="stylesheet" href="../term.css">\n' +
     '<script id="personData" type="application/json">' + safeJson(person) + '</' + 'script>',
