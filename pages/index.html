@@ -3,47 +3,46 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>projects</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../style.css">
-<link rel="stylesheet" href="style.css">
+<title>Projects — RidelLazor</title>
+<link rel="icon" href="../pfp/avatar.jpg">
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="site.css">
 </head>
 <body>
 
-<main class="term projects-term" id="term">
-  <div class="term-bar">
-    <span class="term-title">guest@site: ~/pages</span>
-    <div class="win-controls">
-      <span class="win-btn" id="btnMin" title="Minimize">–</span>
-      <span class="win-btn" id="btnMax" title="Maximize">▢</span>
-      <span class="win-btn win-close" id="btnClose" title="Close">×</span>
-    </div>
-  </div>
+<nav class="topbar">
+  <a class="topbar-tab" href="../">Home</a>
+  <a class="topbar-tab" href="people.html">People</a>
+  <a class="topbar-tab active" href="index.html">Projects</a>
+  <a class="topbar-tab" href="community.html">Community</a>
+  <a class="topbar-tab" href="https://github.com/RidelLazor" target="_blank" rel="noopener">GitHub</a>
+</nav>
 
-  <div class="term-body">
-    <div class="line prompt-line"><span class="prompt">$</span> ls pages/</div>
-    <div class="line nav-row">
-      <a class="nav-link" href="./">index.html</a>
-      <a class="nav-link" href="community.html">community.html</a>
-      <a class="nav-link" href="../">~</a>
-    </div>
+<main class="page-content">
+  <div class="container">
 
-    <div class="line prompt-line"><span class="prompt">$</span> ls projects/</div>
+    <section class="hero">
+      <h1 class="hero-name">Projects</h1>
+      <p class="hero-bio">Work that has been sent in. Each one is a small site of its own.</p>
+    </section>
 
-    <div class="projects-grid" id="projectsGrid"></div>
+    <section class="block">
+      <div class="projects-grid" id="projectsGrid"></div>
+    </section>
+
   </div>
 </main>
 
-<div class="desktop" id="desktop">
-  <div class="desktop-icons" id="desktopIcons"></div>
-  <button class="taskbar-item" id="restoreBtn">
-    <span class="taskbar-dot"></span> guest@site: ~/pages
-  </button>
-</div>
+<footer class="footer">
+  <div class="container footer-inner">
+    <span>RidelLazor</span>
+    <span class="footer-mono">ridellazor.dpdns.org</span>
+  </div>
+</footer>
 
-<script type="module" src="window.js"></script>
 <script type="module" src="script.js"></script>
 </body>
 </html>

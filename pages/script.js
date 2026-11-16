@@ -1,5 +1,6 @@
 function renderProjects(projects) {
   const grid = document.getElementById('projectsGrid');
+  if (!grid) return;
   grid.innerHTML = '';
 
   if (!projects.length) {
@@ -69,44 +70,6 @@ fetch('projects.json')
   .then(renderProjects)
   .catch(err => {
     console.error('Could not load projects.json', err);
-    document.getElementById('projectsGrid').innerHTML =
-      '<p class="projects-empty">could not load projects.json</p>';
+    const g = document.getElementById('projectsGrid');
+    if (g) g.innerHTML = '<p class="projects-empty">could not load projects.json</p>';
   });
-
-// ── window controls live in window.js, shared with the other pages ──
-const restoreTerm = window.restoreTerm;
-
-function renderDesktopIcons() {
-  const grid = document.getElementById('desktopIcons');
-  grid.innerHTML = '';
-
-  const items = [
-    { label: 'Home', url: '../', glyph: '⌂' },
-    { label: 'Community', url: 'community.html', glyph: '📁' },
-    { label: 'Terminal', isTerminal: true, glyph: '>_' }
-  ];
-
-  items.forEach(item => {
-    const btn = document.createElement('button');
-    btn.className = 'desktop-icon';
-
-    const glyph = document.createElement('div');
-    glyph.className = 'desktop-icon-glyph';
-    glyph.textContent = item.glyph;
-
-    const label = document.createElement('span');
-    label.textContent = item.label;
-
-    btn.appendChild(glyph);
-    btn.appendChild(label);
-    btn.addEventListener('click', () => {
-      if (item.isTerminal) {
-        restoreTerm();
-      } else {
-        window.location.href = item.url;
-      }
-    });
-    grid.appendChild(btn);
-  });
-}
-renderDesktopIcons();
