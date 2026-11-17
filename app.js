@@ -257,12 +257,19 @@ function renderPrivate() {
     const input = document.getElementById('vaultPw');
     const err = document.getElementById('vaultErr');
     const tryUnlock = () => {
+      if (!input) return;
       if (unlock(input.value)) { renderPrivate(); }
-      else { err.textContent = 'wrong password'; input.value = ''; input.focus(); }
+      else {
+        if (err) err.textContent = 'wrong password';
+        input.value = '';
+        input.focus();
+      }
     };
-    btn.addEventListener('click', tryUnlock);
-    input.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
-    input.focus();
+    if (btn) btn.addEventListener('click', tryUnlock);
+    if (input) {
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+      input.focus();
+    }
     return;
   }
 
