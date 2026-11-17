@@ -372,12 +372,17 @@ function buildProfilePage(person) {
   const profileLinks = links.concat(person.discordId ? [{ label: 'Discord', url: 'https://discord.com/users/' + person.discordId, icon: 'https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg' }] : []);
 
   const body = [
-    '<nav class="topbar">',
+    '<nav class="topbar" id="topbar">',
+    '  <span class="topbar-indicator" id="topbarIndicator"></span>',
     '  <a class="topbar-tab" href="../../../">Home</a>',
     '  <a class="topbar-tab active" href="../../people.html">People</a>',
-    '  <a class="topbar-tab" href="../../community.html">Projects</a>',
+    '  <a class="topbar-tab" href="../../index.html">Projects</a>',
+    '  <a class="topbar-tab" href="../../community.html">Community</a>',
     '  <a class="topbar-tab" href="https://github.com/RidelLazor" target="_blank" rel="noopener">GitHub</a>',
     '</nav>',
+    '<script>',
+    '(function(){var b=document.getElementById("topbar"),i=document.getElementById("topbarIndicator");if(!b||!i)return;var t=Array.from(b.querySelectorAll(".topbar-tab"));function m(e){if(!e)return;var r=e.getBoundingClientRect(),br=b.getBoundingClientRect();i.style.left=(r.left-br.left)+"px";i.style.width=r.width+"px";}var a=b.querySelector(".topbar-tab.active")||t[0];requestAnimationFrame(function(){m(a);});t.forEach(function(x){x.addEventListener("mouseenter",function(){m(x);});x.addEventListener("mouseleave",function(){m(b.querySelector(".topbar-tab.active")||t[0]);});});window.addEventListener("resize",function(){m(b.querySelector(".topbar-tab.active")||t[0]);});})();',
+    '</script>',
     '',
     '<main class="page-content">',
     '  <div class="container">',

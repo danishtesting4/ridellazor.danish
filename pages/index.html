@@ -13,13 +13,28 @@
 </head>
 <body>
 
-<nav class="topbar">
+<nav class="topbar" id="topbar">
+  <span class="topbar-indicator" id="topbarIndicator"></span>
   <a class="topbar-tab" href="../">Home</a>
   <a class="topbar-tab" href="people.html">People</a>
   <a class="topbar-tab active" href="index.html">Projects</a>
   <a class="topbar-tab" href="community.html">Community</a>
   <a class="topbar-tab" href="https://github.com/RidelLazor" target="_blank" rel="noopener">GitHub</a>
 </nav>
+
+<script>
+(function () {
+  var bar = document.getElementById('topbar');
+  var ind = document.getElementById('topbarIndicator');
+  if (!bar || !ind) return;
+  var tabs = Array.from(bar.querySelectorAll('.topbar-tab'));
+  function move(el) { if (!el) return; var r = el.getBoundingClientRect(), br = bar.getBoundingClientRect(); ind.style.left = (r.left - br.left) + 'px'; ind.style.width = r.width + 'px'; }
+  var active = bar.querySelector('.topbar-tab.active') || tabs[0];
+  requestAnimationFrame(function () { move(active); });
+  tabs.forEach(function (t) { t.addEventListener('mouseenter', function () { move(t); }); t.addEventListener('mouseleave', function () { move(bar.querySelector('.topbar-tab.active') || tabs[0]); }); });
+  window.addEventListener('resize', function () { move(bar.querySelector('.topbar-tab.active') || tabs[0]); });
+})();
+</script>
 
 <main class="page-content">
   <div class="container">

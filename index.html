@@ -16,10 +16,25 @@
 <nav class="topbar" id="topbar">
   <span class="topbar-indicator" id="topbarIndicator"></span>
   <a class="topbar-tab active" href="">Home</a>
-  <a class="topbar-tab" href="pages/">People</a>
-  <a class="topbar-tab" href="pages/community.html">Projects</a>
+  <a class="topbar-tab" href="pages/people.html">People</a>
+  <a class="topbar-tab" href="pages/">Projects</a>
+  <a class="topbar-tab" href="pages/community.html">Community</a>
   <a class="topbar-tab" href="https://github.com/RidelLazor" target="_blank" rel="noopener">GitHub</a>
 </nav>
+
+<script>
+(function () {
+  var bar = document.getElementById('topbar');
+  var ind = document.getElementById('topbarIndicator');
+  if (!bar || !ind) return;
+  var tabs = Array.from(bar.querySelectorAll('.topbar-tab'));
+  function move(el) { if (!el) return; var r = el.getBoundingClientRect(), br = bar.getBoundingClientRect(); ind.style.left = (r.left - br.left) + 'px'; ind.style.width = r.width + 'px'; }
+  var active = bar.querySelector('.topbar-tab.active') || tabs[0];
+  requestAnimationFrame(function () { move(active); });
+  tabs.forEach(function (t) { t.addEventListener('mouseenter', function () { move(t); }); t.addEventListener('mouseleave', function () { move(bar.querySelector('.topbar-tab.active') || tabs[0]); }); });
+  window.addEventListener('resize', function () { move(bar.querySelector('.topbar-tab.active') || tabs[0]); });
+})();
+</script>
 
 <main class="page-content">
   <div class="container">
@@ -42,13 +57,13 @@
     <section class="block">
       <h2 class="block-title">Projects</h2>
       <p class="block-sub">Things people have sent in.</p>
-      <a class="btn" href="pages/community.html">Browse all projects →</a>
+      <a class="btn" href="pages/">Browse all projects →</a>
     </section>
 
     <section class="block">
       <h2 class="block-title">People</h2>
       <p class="block-sub">Everyone who has sent something in.</p>
-      <a class="btn" href="pages/">See all people →</a>
+      <a class="btn" href="pages/people.html">See all people →</a>
     </section>
 
   </div>
