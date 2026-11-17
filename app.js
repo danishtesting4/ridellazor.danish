@@ -298,25 +298,29 @@ function renderPrivate() {
   `);
 
   const fileInput = document.getElementById('vaultFileInput');
-  fileInput.addEventListener('change', async (e) => {
-    const files = Array.from(e.target.files || []);
-    if (!files.length) return;
-    const vault = loadVault();
-    for (const f of files) {
-      const data = await new Promise((resolve, reject) => {
-        const r = new FileReader();
-        r.onload = () => resolve(r.result);
-        r.onerror = () => reject(r.error);
-        r.readAsDataURL(f);
-      });
-      vault.push({ id: Date.now() + '-' + Math.random().toString(36).slice(2), name: f.name, type: f.type, size: f.size, addedAt: Date.now(), data });
-    }
-    saveVault(vault);
-    renderPrivate();
-  });
+  if (fileInput) {
+    fileInput.addEventListener('change', async (e) => {
+      const files = Array.from((e.target && e.target.files) || []);
+      if (!files.length) return;
+      const vault = loadVault();
+      for (const f of files) {
+        const data = await new Promise((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(r.result);
+          r.onerror = () => reject(r.error);
+          r.readAsDataURL(f);
+        });
+        vault.push({ id: Date.now() + '-' + Math.random().toString(36).slice(2), name: f.name, type: f.type, size: f.size, addedAt: Date.now(), data });
+      }
+      saveVault(vault);
+      renderPrivate();
+    });
+  }
 
-  document.getElementById('vaultLockBtn').addEventListener('click', lock);
-  document.getElementById('vaultClearBtn').addEventListener('click', () => {
+  const lockBtn = document.getElementById('vaultLockBtn');
+  if (lockBtn) lockBtn.addEventListener('click', lock);
+  const clearBtn = document.getElementById('vaultClearBtn');
+  if (clearBtn) clearBtn.addEventListener('click', () => {
     if (confirm('Delete all private files in this browser?')) { saveVault([]); renderPrivate(); }
   });
   document.querySelectorAll('.vault-del').forEach(btn => {
