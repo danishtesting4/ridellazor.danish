@@ -48,7 +48,33 @@ async function fetchText(url) {
   return r.text();
 }
 
-function show(html) { app.innerHTML = html; }
+function show(html) {
+  app.classList.add('app-leaving');
+  const swap = () => {
+    app.innerHTML = html;
+    // force reflow so the entering transition runs
+    void app.offsetWidth;
+    app.classList.remove('app-leaving');
+    app.classList.add('app-entering');
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => app.classList.remove('app-entering'));
+    });
+  };
+  // wait for the leave transition (or swap immediately on first paint)
+  const onEnd = (e) => {
+    if (e.target !== app) return;
+    app.removeEventListener('transitionend', onEnd);
+    swap();
+  };
+  if (app.classList.contains('app-ready')) {
+    app.addEventListener('transitionend', onEnd);
+    // fallback in case transitionend doesn't fire
+    setTimeout(() => { app.removeEventListener('transitionend', onEnd); if (app.classList.contains('app-leaving')) swap(); }, 300);
+  } else {
+    app.classList.add('app-ready');
+    swap();
+  }
+}
 
 // ── renderers ───────────────────────────────────────────────
 async function renderHome() {

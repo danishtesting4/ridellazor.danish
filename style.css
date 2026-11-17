@@ -66,6 +66,15 @@ a:hover { color: var(--accent); }
 
 /* ── page content ─────────────────────────────────────────── */
 .page-content { padding-top: max(100px, env(safe-area-inset-top) + 100px); min-height: 100vh; padding-bottom: 80px; }
+
+/* route transition */
+#app {
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  will-change: opacity, transform;
+}
+#app.app-leaving { opacity: 0; transform: translateY(8px); }
+#app.app-entering { opacity: 0; transform: translateY(-8px); transition: none; }
+#app.app-ready { opacity: 1; transform: none; }
 .container { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
 
 /* ── hero ──────────────────────────────────────────────────── */
