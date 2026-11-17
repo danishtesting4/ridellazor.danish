@@ -214,6 +214,120 @@ async function renderCommunity() {
   document.title = 'Community — ridellazor.danish';
 }
 
+// ── private files (password-gated, browser-local vault) ─────
+const PRIVATE_PASSWORD = 'DanishfauzaR2R';
+const VAULT_KEY = 'privateVault';
+
+function isUnlocked() { return sessionStorage.getItem('privateUnlocked') === '1'; }
+function unlock(pw) {
+  if (pw === PRIVATE_PASSWORD) { sessionStorage.setItem('privateUnlocked', '1'); return true; }
+  return false;
+}
+function lock() { sessionStorage.removeItem('privateUnlocked'); route(); }
+
+function loadVault() {
+  try { return JSON.parse(localStorage.getItem(VAULT_KEY) || '[]'); } catch (e) { return []; }
+}
+function saveVault(v) { localStorage.setItem(VAULT_KEY, JSON.stringify(v)); }
+
+function formatBytes(n) {
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+  return (n / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function renderPrivate() {
+  setActiveTab('Private');
+  document.title = 'Private — ridellazor.danish';
+  if (!isUnlocked()) {
+    show(`
+      <section class="hero">
+        <h1 class="hero-name">Private Files</h1>
+        <p class="hero-bio">This area is password-protected.</p>
+      </section>
+      <section class="block">
+        <div class="vault-gate">
+          <input type="password" id="vaultPw" class="vault-input" placeholder="password" autocomplete="off">
+          <button class="btn vault-unlock" id="vaultUnlockBtn">unlock</button>
+          <p class="vault-err" id="vaultErr"></p>
+        </div>
+      </section>
+    `);
+    const btn = document.getElementById('vaultUnlockBtn');
+    const input = document.getElementById('vaultPw');
+    const err = document.getElementById('vaultErr');
+    const tryUnlock = () => {
+      if (unlock(input.value)) { renderPrivate(); }
+      else { err.textContent = 'wrong password'; input.value = ''; input.focus(); }
+    };
+    btn.addEventListener('click', tryUnlock);
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') tryUnlock(); });
+    input.focus();
+    return;
+  }
+
+  const vault = loadVault();
+  const rows = vault.map(f => `
+    <div class="vault-row">
+      <div class="vault-row-info">
+        <span class="vault-name">${escapeHtml(f.name)}</span>
+        <span class="vault-meta">${escapeHtml(f.type || 'file')} · ${formatBytes(f.size)} · ${new Date(f.addedAt).toLocaleString()}</span>
+      </div>
+      <div class="vault-row-actions">
+        <a class="btn" href="${f.data}" download="${escapeHtml(f.name)}">download</a>
+        <button class="btn vault-del" data-id="${f.id}">delete</button>
+      </div>
+    </div>`).join('');
+
+  show(`
+    <section class="hero">
+      <h1 class="hero-name">Private Files</h1>
+      <p class="hero-bio">Stored in this browser only. ${vault.length} file${vault.length === 1 ? '' : 's'}.</p>
+    </section>
+    <section class="block">
+      <div class="vault-toolbar">
+        <label class="btn vault-upload-label">
+          <input type="file" id="vaultFileInput" multiple hidden>
+          upload files
+        </label>
+        <button class="btn" id="vaultLockBtn">lock</button>
+        <button class="btn" id="vaultClearBtn">clear all</button>
+      </div>
+      <div class="vault-list">${rows || '<p class="empty">no files yet — upload one above</p>'}</div>
+    </section>
+  `);
+
+  const fileInput = document.getElementById('vaultFileInput');
+  fileInput.addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const vault = loadVault();
+    for (const f of files) {
+      const data = await new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onload = () => resolve(r.result);
+        r.onerror = () => reject(r.error);
+        r.readAsDataURL(f);
+      });
+      vault.push({ id: Date.now() + '-' + Math.random().toString(36).slice(2), name: f.name, type: f.type, size: f.size, addedAt: Date.now(), data });
+    }
+    saveVault(vault);
+    renderPrivate();
+  });
+
+  document.getElementById('vaultLockBtn').addEventListener('click', lock);
+  document.getElementById('vaultClearBtn').addEventListener('click', () => {
+    if (confirm('Delete all private files in this browser?')) { saveVault([]); renderPrivate(); }
+  });
+  document.querySelectorAll('.vault-del').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-id');
+      saveVault(loadVault().filter(f => f.id !== id));
+      renderPrivate();
+    });
+  });
+}
+
 // ── router ──────────────────────────────────────────────────
 function route() {
   const hash = (location.hash || '#/').replace(/^#/, '');
@@ -226,6 +340,7 @@ function route() {
   }
   if (parts[0] === 'projects') { renderProjects(); return; }
   if (parts[0] === 'community') { renderCommunity(); return; }
+  if (parts[0] === 'private') { renderPrivate(); return; }
   if (parts[0] === 'home') { renderHome(); return; }
   // fallback
   renderHome();
